@@ -1,0 +1,147 @@
+<div class="flex flex-col h-full" (click)="closeMenu()">
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+    <div>
+      <h1 class="text-2xl font-bold text-[#1B211A]">Product Management</h1>
+      <p class="text-gray-500 text-sm mt-1">Manage your inventory, prices, and stock levels.</p>
+    </div>
+
+    <div class="flex gap-3">
+      <div class="relative">
+        <ng-icon
+          name="heroMagnifyingGlass"
+          class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg"
+        ></ng-icon>
+        <input
+          type="text"
+          placeholder="Search products..."
+          class="pl-10 pr-4 py-2 bg-gray-100 border-none rounded-full text-sm w-64 focus:ring-2 focus:ring-[#628141] focus:outline-none"
+        />
+      </div>
+      <button
+        class="flex items-center gap-2 bg-[#1B211A] text-white px-5 py-2 rounded-full text-sm font-medium hover:bg-black transition"
+      >
+        <ng-icon name="heroPlus" class="text-lg"></ng-icon> Add Product
+      </button>
+    </div>
+  </div>
+
+  <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+    <div class="flex gap-2 overflow-x-auto pb-2 md:pb-0">
+      @for (cat of categories; track cat) {
+        <button
+          [class]="
+            selectedCategory === cat
+              ? 'bg-[#1B211A] text-white'
+              : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
+          "
+          class="px-4 py-1.5 rounded-full text-sm font-medium transition whitespace-nowrap"
+          (click)="selectedCategory = cat"
+        >
+          {{ cat }}
+        </button>
+      }
+    </div>
+
+    <div class="flex bg-white rounded-lg p-1 border border-gray-200 shadow-sm">
+      <button
+        class="p-2 rounded hover:bg-gray-100"
+        [class.bg-gray-100]="viewMode === 'grid'"
+        (click)="viewMode = 'grid'"
+      >
+        <ng-icon name="heroSquares2x2" class="text-xl text-gray-600"></ng-icon>
+      </button>
+      <button
+        class="p-2 rounded hover:bg-gray-100"
+        [class.bg-gray-100]="viewMode === 'list'"
+        (click)="viewMode = 'list'"
+      >
+        <ng-icon name="heroListBullet" class="text-xl text-gray-600"></ng-icon>
+      </button>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+    @for (product of products; track product.id) {
+      <div
+        class="bg-[#EBD5AB] p-4 rounded-3xl relative group hover:shadow-lg transition-all duration-300"
+      >
+        <button
+          (click)="toggleMenu(product.id, $event)"
+          class="absolute top-4 right-4 w-8 h-8 bg-white/50 hover:bg-white rounded-full flex items-center justify-center backdrop-blur-sm transition z-10"
+        >
+          <ng-icon name="heroEllipsisHorizontal" class="text-[#1B211A]"></ng-icon>
+        </button>
+
+        @if (activeMenuId === product.id) {
+          <div
+            (click)="$event.stopPropagation()"
+            class="absolute top-12 right-4 bg-white rounded-xl shadow-xl border border-gray-100 w-40 py-2 z-20 animate-in fade-in zoom-in-95 duration-200"
+          >
+            <a
+              [routerLink]="['/products', product.id]"
+              class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2 cursor-pointer decoration-0"
+            >
+              <ng-icon name="heroMagnifyingGlass"></ng-icon> View Details
+            </a>
+
+            <a
+              [routerLink]="['/products', product.id, 'edit']"
+              class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2 cursor-pointer decoration-0"
+            >
+              <ng-icon name="heroPencilSquare"></ng-icon> Edit
+            </a>
+
+            <div class="h-px bg-gray-100 my-1"></div>
+
+            <button
+              class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+            >
+              <ng-icon name="heroTrash"></ng-icon> Delete Product
+            </button>
+          </div>
+        }
+
+        <div class="aspect-square w-full bg-white rounded-2xl overflow-hidden mb-4 relative">
+          <img
+            [src]="product.image"
+            class="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+          />
+
+          <div class="absolute bottom-2 left-2">
+            @if (product.status === 'Low Stock') {
+              <span
+                class="bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-md shadow-sm flex items-center gap-1"
+              >
+                ⚠ Low Stock ({{ product.stock }})
+              </span>
+            } @else {
+              <span
+                class="bg-black/70 backdrop-blur-md text-white text-[10px] font-bold px-2 py-1 rounded-md shadow-sm"
+              >
+                {{ product.stock }} in stock
+              </span>
+            }
+          </div>
+        </div>
+
+        <div>
+          <span class="text-[10px] uppercase tracking-wider font-bold text-[#1B211A]/60">{{
+            product.category
+          }}</span>
+          <h3 class="text-lg font-bold text-[#1B211A] leading-tight mt-1 mb-3 truncate">
+            {{ product.name }}
+          </h3>
+
+          <div class="flex items-center justify-between">
+            <span class="text-xl font-bold text-[#1B211A]">${{ product.price.toFixed(2) }}</span>
+            <button
+              class="w-10 h-10 bg-[#1B211A] rounded-full flex items-center justify-center text-white hover:bg-black transition transform hover:rotate-12"
+            >
+              <ng-icon name="heroPencilSquare" class="text-lg"></ng-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</div>
