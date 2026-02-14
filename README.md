@@ -5,8 +5,8 @@ Larang POS is a full-stack Point of Sale application designed for modern retail 
 ## 🚀 Tech Stack
 
 - **Frontend:** Angular 19 (Standalone Components, Signals), Tailwind CSS, Ng-Icons.
-- **Backend:** Laravel 11 (API Resource, Sanctum Auth).
-- **Database:** PostgreSQL / MySQL.
+- **Backend:** Laravel 12 (API Resource, Sanctum Auth).
+- **Database:** PostgreSQL Supabase
 - **Design System:** Custom "Eco-Luxury" Theme (Forest Green & Warm Beige).
 
 ## ✨ Key Features (Implemented)
