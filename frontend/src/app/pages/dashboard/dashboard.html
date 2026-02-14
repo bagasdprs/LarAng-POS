@@ -1,0 +1,254 @@
+<div class="flex flex-col gap-8">
+  <header class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div>
+      <h1 class="text-3xl font-bold text-[#1B211A]">Dashboard Overview</h1>
+      <p class="text-gray-500 mt-1">Welcome back, here's what's happening with your store today.</p>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <span
+        class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gray-100 text-sm font-medium text-gray-600"
+      >
+        <span class="w-2 h-2 rounded-full bg-[#628141]"></span> Store Open
+      </span>
+      <button class="p-3 rounded-full bg-white border border-gray-200 hover:bg-gray-50 shadow-sm">
+        <svg class="w-5 h-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+          />
+        </svg>
+      </button>
+      <button class="p-3 rounded-full bg-white border border-gray-200 hover:bg-gray-50 shadow-sm">
+        <svg class="w-5 h-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+          />
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+          />
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    @for (stat of stats; track stat.label) {
+      <div
+        class="bg-[#EBD5AB] p-6 rounded-3xl relative overflow-hidden transition-transform hover:-translate-y-1"
+      >
+        <div
+          class="absolute top-6 right-6 w-10 h-10 rounded-full bg-white/30 flex items-center justify-center text-[#1B211A]"
+        >
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              [attr.d]="stat.icon"
+            />
+          </svg>
+        </div>
+
+        <p class="text-[#1B211A] text-sm font-medium uppercase tracking-wider opacity-70">
+          {{ stat.label }}
+        </p>
+        <h3 class="text-3xl font-bold text-[#1B211A] mt-2">{{ stat.value }}</h3>
+
+        <div class="mt-4 flex items-center gap-2">
+          <span
+            [class]="
+              stat.isAlert
+                ? 'text-red-700 bg-red-100 px-2 py-0.5 rounded-md text-xs font-bold'
+                : 'text-sm font-medium text-[#1B211A]'
+            "
+          >
+            {{ stat.isAlert ? 'Alert' : stat.isUp ? '↗ ' : '→ ' }}
+          </span>
+          <span class="text-xs text-[#1B211A]/70">{{ stat.trend }}</span>
+        </div>
+      </div>
+    }
+  </div>
+
+  <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
+    <div class="flex justify-between items-center mb-8">
+      <div>
+        <h3 class="text-xl font-bold text-[#1B211A]">Revenue Overview</h3>
+        <p class="text-sm text-gray-500">Daily revenue breakdown</p>
+      </div>
+      <div class="flex bg-gray-100 rounded-lg p-1">
+        <button class="px-4 py-1 bg-white text-xs font-medium shadow-sm rounded-md text-[#1B211A]">
+          Weekly
+        </button>
+        <button class="px-4 py-1 text-xs font-medium text-gray-500 hover:text-[#1B211A]">
+          Monthly
+        </button>
+        <button class="px-4 py-1 text-xs font-medium text-gray-500 hover:text-[#1B211A]">
+          Yearly
+        </button>
+      </div>
+    </div>
+
+    <div class="h-64 flex items-end justify-between gap-2 px-4">
+      <div
+        class="w-full bg-[#8BAE66] rounded-t-lg h-[40%] hover:bg-[#628141] transition-colors relative group"
+      >
+        <div
+          class="opacity-0 group-hover:opacity-100 absolute -top-8 left-1/2 -translate-x-1/2 bg-black text-white text-xs py-1 px-2 rounded"
+        >
+          Mon
+        </div>
+      </div>
+      <div
+        class="w-full bg-[#8BAE66] rounded-t-lg h-[65%] hover:bg-[#628141] transition-colors relative group"
+      >
+        <div
+          class="opacity-0 group-hover:opacity-100 absolute -top-8 left-1/2 -translate-x-1/2 bg-black text-white text-xs py-1 px-2 rounded"
+        >
+          Tue
+        </div>
+      </div>
+      <div
+        class="w-full bg-[#8BAE66] rounded-t-lg h-[45%] hover:bg-[#628141] transition-colors relative group"
+      >
+        <div
+          class="opacity-0 group-hover:opacity-100 absolute -top-8 left-1/2 -translate-x-1/2 bg-black text-white text-xs py-1 px-2 rounded"
+        >
+          Wed
+        </div>
+      </div>
+      <div
+        class="w-full bg-[#8BAE66] rounded-t-lg h-[80%] hover:bg-[#628141] transition-colors relative group"
+      >
+        <div
+          class="opacity-0 group-hover:opacity-100 absolute -top-8 left-1/2 -translate-x-1/2 bg-black text-white text-xs py-1 px-2 rounded"
+        >
+          Thu
+        </div>
+      </div>
+      <div
+        class="w-full bg-[#8BAE66] rounded-t-lg h-[55%] hover:bg-[#628141] transition-colors relative group"
+      >
+        <div
+          class="opacity-0 group-hover:opacity-100 absolute -top-8 left-1/2 -translate-x-1/2 bg-black text-white text-xs py-1 px-2 rounded"
+        >
+          Fri
+        </div>
+      </div>
+      <div class="w-full bg-[#628141] rounded-t-lg h-[90%] shadow-lg relative group">
+        <div
+          class="opacity-0 group-hover:opacity-100 absolute -top-8 left-1/2 -translate-x-1/2 bg-black text-white text-xs py-1 px-2 rounded"
+        >
+          Sat
+        </div>
+      </div>
+      <div
+        class="w-full bg-[#8BAE66] rounded-t-lg h-[70%] hover:bg-[#628141] transition-colors relative group"
+      >
+        <div
+          class="opacity-0 group-hover:opacity-100 absolute -top-8 left-1/2 -translate-x-1/2 bg-black text-white text-xs py-1 px-2 rounded"
+        >
+          Sun
+        </div>
+      </div>
+    </div>
+    <div
+      class="flex justify-between text-xs text-gray-400 mt-4 px-4 uppercase font-medium tracking-wide"
+    >
+      <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span
+      ><span>Sat</span><span>Sun</span>
+    </div>
+  </div>
+
+  <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 mb-8">
+    <div class="flex justify-between items-center mb-6">
+      <h3 class="text-xl font-bold text-[#1B211A]">Recent Transactions</h3>
+      <a
+        href="#"
+        class="text-sm text-[#628141] font-semibold hover:text-[#8BAE66] flex items-center gap-1"
+      >
+        View All
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M17 8l4 4m0 0l-4 4m4-4H3"
+          />
+        </svg>
+      </a>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="text-xs text-gray-400 uppercase tracking-wider border-b border-gray-100">
+            <th class="py-3 font-medium">Transaction ID</th>
+            <th class="py-3 font-medium">Date & Time</th>
+            <th class="py-3 font-medium">Customer</th>
+            <th class="py-3 font-medium">Amount</th>
+            <th class="py-3 font-medium">Status</th>
+            <th class="py-3 font-medium text-right">Action</th>
+          </tr>
+        </thead>
+        <tbody class="text-sm">
+          @for (trx of recentTransactions; track trx.id) {
+            <tr
+              class="group hover:bg-gray-50 transition-colors border-b border-gray-50 last:border-0"
+            >
+              <td class="py-4 font-semibold text-[#1B211A]">{{ trx.id }}</td>
+              <td class="py-4 text-gray-500">
+                <div>{{ trx.date }}</div>
+                <div class="text-xs text-gray-400">{{ trx.time }}</div>
+              </td>
+              <td class="py-4">
+                <div class="flex items-center gap-2">
+                  <div
+                    class="w-8 h-8 rounded-full bg-[#EBD5AB] flex items-center justify-center text-[#1B211A] font-bold text-xs"
+                  >
+                    {{ trx.customer.charAt(0) }}
+                  </div>
+                  <span class="font-medium text-gray-700">{{ trx.customer }}</span>
+                </div>
+              </td>
+              <td class="py-4 font-bold text-[#1B211A]">{{ trx.amount }}</td>
+              <td class="py-4">
+                <span
+                  [class]="
+                    trx.status === 'Completed'
+                      ? 'bg-green-100 text-green-700'
+                      : 'bg-orange-100 text-orange-700'
+                  "
+                  class="px-3 py-1 rounded-full text-xs font-medium"
+                >
+                  {{ trx.status }}
+                </span>
+              </td>
+              <td class="py-4 text-right">
+                <button class="text-gray-400 hover:text-[#1B211A]">
+                  <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
+                    />
+                  </svg>
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
