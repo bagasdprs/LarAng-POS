@@ -1,0 +1,164 @@
+<div class="flex flex-col h-full pb-10" (click)="closeMenu()">
+  <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-8">
+    <div>
+      <h1 class="text-2xl font-bold text-[#1B211A]">Category Management</h1>
+      <p class="text-gray-500 text-sm mt-1">Organize and manage your product catalog structure.</p>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <div class="hidden md:flex bg-gray-100 p-1 rounded-lg mr-4">
+        <button class="px-4 py-1.5 bg-white text-[#1B211A] text-xs font-bold rounded shadow-sm">
+          All
+        </button>
+        <button class="px-4 py-1.5 text-gray-500 text-xs font-medium hover:text-[#1B211A]">
+          Active
+        </button>
+        <button class="px-4 py-1.5 text-gray-500 text-xs font-medium hover:text-[#1B211A]">
+          Archived
+        </button>
+      </div>
+
+      <button
+        class="flex items-center gap-2 bg-[#628141] text-white px-5 py-2.5 rounded-lg text-sm font-bold hover:bg-[#526f35] shadow-lg transition transform hover:-translate-y-0.5"
+      >
+        <ng-icon name="heroPlus" class="text-lg"></ng-icon> Add Category
+      </button>
+    </div>
+  </div>
+
+  <div class="relative w-full md:w-96 mb-8">
+    <ng-icon
+      name="heroMagnifyingGlass"
+      class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-lg"
+    ></ng-icon>
+    <input
+      type="text"
+      placeholder="Search categories..."
+      class="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#628141] focus:border-transparent outline-none shadow-sm transition"
+    />
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+    @for (cat of categories; track cat.id) {
+      <div
+        class="bg-[#EBD5AB] p-1.5 rounded-3xl relative group transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+        [class.z-50]="activeMenuId === cat.id"
+        [class.z-0]="activeMenuId !== cat.id"
+      >
+        <div
+          class="bg-[#EBD5AB] rounded-[20px] p-4 h-full flex flex-row items-center gap-4 relative"
+        >
+          <div
+            class="w-20 h-20 shrink-0 rounded-2xl overflow-hidden shadow-md border-2 border-white/50 relative"
+          >
+            <img [src]="cat.image" class="w-full h-full object-cover" />
+          </div>
+
+          <div class="flex-1 pr-8">
+            <h3 class="text-lg font-bold text-[#1B211A] leading-tight mb-1">{{ cat.name }}</h3>
+            <p class="text-xs text-[#1B211A]/70 font-medium mb-3">{{ cat.count }} Items Linked</p>
+
+            @if (cat.stockStatus === 'Alert') {
+              <div
+                class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-red-100/80 backdrop-blur border border-red-200 rounded-md"
+              >
+                <span class="relative flex h-2 w-2">
+                  <span
+                    class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"
+                  ></span>
+                  <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                </span>
+                <span class="text-[10px] font-bold text-red-700 uppercase tracking-wide"
+                  >Low Stock</span
+                >
+              </div>
+            } @else {
+              <div
+                class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-white/40 border border-white/50 rounded-md"
+              >
+                <div class="w-2 h-2 rounded-full bg-[#628141]"></div>
+                <span class="text-[10px] font-bold text-[#1B211A] uppercase tracking-wide"
+                  >Good Stock</span
+                >
+              </div>
+            }
+          </div>
+
+          <div class="absolute top-3 right-3">
+            <button
+              (click)="toggleMenu(cat.id, $event)"
+              class="w-8 h-8 flex items-center justify-center text-[#1B211A]/50 hover:text-[#1B211A] bg-white/30 hover:bg-white/80 rounded-full transition-all duration-200 backdrop-blur-sm"
+            >
+              <ng-icon name="heroEllipsisVertical" class="text-lg"></ng-icon>
+            </button>
+
+            @if (activeMenuId === cat.id) {
+              <div
+                (click)="$event.stopPropagation()"
+                class="absolute top-10 right-0 bg-white border border-gray-100 rounded-xl shadow-2xl w-44 py-1.5 z-100 origin-top-right animate-in fade-in zoom-in-95 duration-200 overflow-hidden"
+              >
+                <button
+                  class="w-full text-left px-4 py-2.5 text-xs font-semibold text-gray-600 hover:bg-gray-50 hover:text-[#1B211A] flex items-center gap-3 transition"
+                >
+                  <ng-icon name="heroMagnifyingGlass" class="text-sm text-gray-400"></ng-icon> View
+                  Details
+                </button>
+
+                <button
+                  class="w-full text-left px-4 py-2.5 text-xs font-semibold text-gray-600 hover:bg-gray-50 hover:text-[#1B211A] flex items-center gap-3 transition"
+                >
+                  <ng-icon name="heroPencilSquare" class="text-sm text-gray-400"></ng-icon> Edit
+                </button>
+
+                <div class="h-px bg-gray-100 my-1 mx-3"></div>
+
+                <button
+                  class="w-full text-left px-4 py-2.5 text-xs font-semibold text-red-500 hover:bg-red-50 flex items-center gap-3 transition"
+                >
+                  <ng-icon name="heroTrash" class="text-sm text-red-400"></ng-icon> Delete
+                </button>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    }
+
+    <button
+      class="border-2 border-dashed border-gray-300 rounded-3xl flex flex-col items-center justify-center p-6 hover:border-[#628141] hover:bg-green-50/50 transition cursor-pointer group min-h-35"
+    >
+      <div
+        class="w-10 h-10 rounded-full bg-gray-100 group-hover:bg-[#628141] flex items-center justify-center text-gray-400 group-hover:text-white transition mb-3"
+      >
+        <ng-icon name="heroPlus" class="text-xl"></ng-icon>
+      </div>
+      <span class="text-sm font-bold text-gray-500 group-hover:text-[#628141]"
+        >Create New Category</span
+      >
+    </button>
+  </div>
+
+  <div>
+    <h3 class="text-lg font-bold text-[#1B211A] mb-4">Quick Insights</h3>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      @for (insight of insights; track insight.label) {
+        <div
+          class="bg-white p-5 rounded-2xl border border-gray-100 flex items-center gap-4 shadow-sm hover:shadow-md transition"
+        >
+          <div
+            [class]="insight.color"
+            class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl"
+          >
+            <ng-icon [name]="insight.icon"></ng-icon>
+          </div>
+          <div>
+            <p class="text-xs text-gray-400 font-bold uppercase tracking-wider mb-0.5">
+              {{ insight.label }}
+            </p>
+            <p class="text-lg font-bold text-[#1B211A]">{{ insight.value }}</p>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</div>
