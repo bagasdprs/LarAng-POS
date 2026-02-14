@@ -1,0 +1,56 @@
+# ==============================
+# GENERAL / IDE SETTINGS
+# ==============================
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.log
+*.swp
+*.swo
+
+# ==============================
+# DEPENDENCIES (Global)
+# ==============================
+node_modules/
+npm-debug.log
+yarn-error.log
+pnpm-debug.log
+
+# ==============================
+# LARAVEL BACKEND (Ignore List)
+# ==============================
+/backend/vendor/
+/backend/node_modules/
+/backend/public/build
+/backend/public/hot
+/backend/public/storage
+/backend/storage/*.key
+/backend/storage/framework/cache/data/*
+/backend/storage/framework/sessions/*
+/backend/storage/framework/testing/*
+/backend/storage/framework/views/*
+/backend/storage/logs/*
+!/backend/storage/logs/.gitkeep
+/backend/.env
+/backend/.env.backup
+/backend/.phpunit.result.cache
+/backend/docker-compose.override.yml
+
+# ==============================
+# ANGULAR FRONTEND (Ignore List)
+# ==============================
+/frontend/.angular/
+/frontend/dist/
+/frontend/tmp/
+/frontend/out-tsc/
+/frontend/bazel-out/
+/frontend/test-results/
+/frontend/.vscode/
+
+# ==============================
+# OS Generated Files
+# ==============================
+.spotlight-V100
+.Trashes
+ehthumbs.db
