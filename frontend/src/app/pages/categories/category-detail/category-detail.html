@@ -1,0 +1,170 @@
+<div class="flex flex-col max-w-6xl mx-auto pb-10">
+  <div class="flex items-center gap-4 mb-8">
+    <a
+      routerLink="/categories"
+      class="p-2 bg-white border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50 transition shadow-sm"
+    >
+      <ng-icon name="heroArrowLeft" class="text-xl"></ng-icon>
+    </a>
+    <div>
+      <h1 class="text-2xl font-bold text-[#1B211A]">Category Details</h1>
+      <p class="text-sm text-gray-500">Manage products inside this category.</p>
+    </div>
+  </div>
+
+  <div
+    class="bg-white rounded-3xl shadow-sm border border-gray-100 flex flex-col md:flex-row overflow-hidden mb-8"
+  >
+    <div class="md:w-2/5 bg-[#EBD5AB] p-8 flex flex-col items-center justify-center relative">
+      <div class="w-48 h-48 rounded-2xl overflow-hidden shadow-lg border-4 border-white/50 mb-6">
+        <img [src]="category.image" class="w-full h-full object-cover" />
+      </div>
+
+      <div class="flex items-center gap-3">
+        <a
+          [routerLink]="['/categories', categoryId, 'edit']"
+          class="flex items-center gap-2 px-5 py-2.5 bg-[#1B211A] text-white text-sm font-bold rounded-full shadow-lg hover:bg-black transition"
+        >
+          <ng-icon name="heroPencilSquare"></ng-icon> Edit
+        </a>
+        <button
+          (click)="toggleStatus()"
+          class="flex items-center gap-2 px-5 py-2.5 bg-white/60 backdrop-blur text-[#1B211A] text-sm font-bold rounded-full shadow-sm hover:bg-white transition"
+        >
+          <ng-icon name="heroEyeSlash"></ng-icon> {{ category.status ? 'Hide' : 'Show' }}
+        </button>
+      </div>
+    </div>
+
+    <div class="md:w-3/5 p-8 flex flex-col justify-center">
+      <div class="flex items-center gap-3 mb-3">
+        @if (category.status) {
+          <span
+            class="px-2.5 py-1 bg-green-100 text-green-700 text-[10px] font-bold tracking-wider rounded uppercase"
+            >Active</span
+          >
+        } @else {
+          <span
+            class="px-2.5 py-1 bg-gray-100 text-gray-600 text-[10px] font-bold tracking-wider rounded uppercase"
+            >Hidden</span
+          >
+        }
+        <span class="text-xs text-gray-400 font-medium font-mono">ID: {{ category.id }}</span>
+      </div>
+
+      <h2 class="text-4xl font-extrabold text-[#1B211A] mb-3">{{ category.name }}</h2>
+      <p class="text-sm text-gray-500 leading-relaxed mb-8 max-w-md">
+        {{ category.description }}
+      </p>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div class="bg-gray-50 border border-gray-100 p-4 rounded-2xl flex items-center gap-4">
+          <div
+            class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600"
+          >
+            <ng-icon name="heroBanknotes" class="text-xl"></ng-icon>
+          </div>
+          <div>
+            <p class="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-0.5">
+              Revenue (30d)
+            </p>
+            <p class="text-lg font-bold text-[#1B211A]">${{ category.revenue | number }}</p>
+          </div>
+        </div>
+
+        <div class="bg-gray-50 border border-gray-100 p-4 rounded-2xl flex items-center gap-4">
+          <div
+            class="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-orange-600"
+          >
+            <ng-icon name="heroCube" class="text-xl"></ng-icon>
+          </div>
+          <div>
+            <p class="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-0.5">
+              Total Items
+            </p>
+            <p class="text-lg font-bold text-[#1B211A]">{{ category.totalItems }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+    <div class="flex justify-between items-center mb-6">
+      <h3 class="font-bold text-[#1B211A] text-lg">Products in Category</h3>
+
+      <div class="relative w-64">
+        <ng-icon
+          name="heroMagnifyingGlass"
+          class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+        ></ng-icon>
+        <input
+          type="text"
+          placeholder="Search items..."
+          class="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#628141] outline-none transition"
+        />
+      </div>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="border-b border-gray-100">
+            <th class="py-3 px-4 text-[11px] font-bold text-gray-400 uppercase tracking-wider">
+              Item Name
+            </th>
+            <th class="py-3 px-4 text-[11px] font-bold text-gray-400 uppercase tracking-wider">
+              Price
+            </th>
+            <th class="py-3 px-4 text-[11px] font-bold text-gray-400 uppercase tracking-wider">
+              Stock
+            </th>
+            <th class="py-3 px-4 text-[11px] font-bold text-gray-400 uppercase tracking-wider">
+              Status
+            </th>
+            <th
+              class="py-3 px-4 text-center text-[11px] font-bold text-gray-400 uppercase tracking-wider"
+            >
+              Action
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (prod of products; track prod.id) {
+            <tr class="border-b border-gray-50 hover:bg-gray-50/50 transition">
+              <td class="py-4 px-4 flex items-center gap-3">
+                <div
+                  class="w-8 h-8 rounded bg-[#EBD5AB]/30 flex items-center justify-center text-orange-600"
+                >
+                  ☕
+                </div>
+                <span class="font-bold text-[#1B211A] text-sm">{{ prod.name }}</span>
+              </td>
+              <td class="py-4 px-4 text-sm text-gray-600 font-medium">
+                ${{ prod.price | number: '1.2-2' }}
+              </td>
+              <td class="py-4 px-4">
+                <span class="px-2.5 py-1 rounded-md text-xs font-bold" [ngClass]="prod.stockColor">
+                  {{ prod.stock }}
+                </span>
+              </td>
+              <td class="py-4 px-4">
+                <div
+                  class="w-2.5 h-2.5 rounded-full"
+                  [ngClass]="prod.status ? 'bg-[#628141]' : 'bg-red-500'"
+                ></div>
+              </td>
+              <td class="py-4 px-4 text-center">
+                <button
+                  class="p-1.5 text-gray-400 hover:text-[#1B211A] hover:bg-gray-100 rounded transition"
+                >
+                  <ng-icon name="heroEllipsisVertical"></ng-icon>
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

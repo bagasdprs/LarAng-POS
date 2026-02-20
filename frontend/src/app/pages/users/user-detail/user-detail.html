@@ -1,0 +1,206 @@
+<div
+  class="fixed inset-0 z-100 bg-[#1B211A]/80 backdrop-blur-md flex items-center justify-center p-4 md:p-6"
+>
+  <div
+    class="w-full max-w-5xl bg-[#F4EBD9] rounded-4xl shadow-2xl flex flex-col max-h-[95vh] no-scrollbar overflow-y-auto relative"
+  >
+    <div class="bg-[#1B211A] px-8 py-8 flex justify-between items-start shrink-0 rounded-t-4xl">
+      <div class="flex items-center gap-6">
+        <div class="relative w-24 h-24">
+          <img
+            [src]="user?.avatar"
+            class="w-full h-full rounded-full object-cover border-4 border-[#628141] shadow-lg"
+          />
+          <div class="absolute bottom-0 right-0 bg-white rounded-full p-0.5">
+            <ng-icon name="heroCheckCircle" class="text-2xl text-[#628141]"></ng-icon>
+          </div>
+        </div>
+        <div>
+          <h1 class="text-3xl font-extrabold text-white mb-2">{{ user?.name }}</h1>
+          <div class="flex items-center gap-3">
+            <span
+              class="px-3 py-1 bg-[#628141] text-white text-xs font-bold rounded-lg shadow-sm"
+              >{{ user?.role }}</span
+            >
+            <span
+              class="px-3 py-1 bg-white/10 text-gray-300 font-mono text-xs rounded-lg border border-white/20"
+              >ID: {{ user?.id }}</span
+            >
+          </div>
+        </div>
+      </div>
+
+      <button
+        (click)="closeModal()"
+        class="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-full transition cursor-pointer"
+      >
+        <ng-icon name="heroXMark" class="text-2xl"></ng-icon>
+      </button>
+    </div>
+
+    <div class="p-8 grid grid-cols-1 lg:grid-cols-3 gap-6 flex-1">
+      <div class="flex flex-col gap-6">
+        <div class="flex items-center gap-2 mb-2">
+          <ng-icon name="heroUser" class="text-[#628141] text-xl"></ng-icon>
+          <h3 class="font-bold text-[#1B211A] text-lg">Basic Info</h3>
+        </div>
+
+        <div class="bg-[#FFFDF9] p-6 rounded-3xl shadow-sm border border-[#EBD5AB]/50 space-y-6">
+          <div>
+            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">
+              Email Address
+            </p>
+            <div class="flex items-center gap-2 text-[#1B211A] font-medium">
+              <ng-icon name="heroEnvelope" class="text-gray-400"></ng-icon> {{ user?.email }}
+            </div>
+          </div>
+          <div>
+            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">
+              Phone Number
+            </p>
+            <div class="flex items-center gap-2 text-[#1B211A] font-medium">
+              <ng-icon name="heroPhone" class="text-gray-400"></ng-icon> +1 (555) 123-4567
+            </div>
+          </div>
+          <div>
+            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">
+              Join Date
+            </p>
+            <div class="flex items-center gap-2 text-[#1B211A] font-medium">
+              <ng-icon name="heroCalendar" class="text-gray-400"></ng-icon> Oct 15, 2022
+            </div>
+          </div>
+          <div>
+            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">
+              Location
+            </p>
+            <div class="flex items-center gap-2 text-[#1B211A] font-medium">
+              <ng-icon name="heroBuildingOffice" class="text-gray-400"></ng-icon> Downtown Branch
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-red-50 p-6 rounded-3xl border border-red-100 mt-auto">
+          <div class="flex items-center gap-2 mb-2">
+            <ng-icon name="heroExclamationTriangle" class="text-red-500 text-lg"></ng-icon>
+            <h4 class="font-bold text-red-600">Danger Zone</h4>
+          </div>
+          <p class="text-[10px] text-red-500/80 mb-4 leading-relaxed">
+            Deactivating this user will revoke all access immediately. They will not be able to log
+            in.
+          </p>
+          <button
+            (click)="deactivateUser()"
+            class="w-full py-2.5 bg-white border border-red-200 text-red-600 rounded-xl text-sm font-bold hover:bg-red-50 transition shadow-sm"
+          >
+            Deactivate User
+          </button>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-6">
+        <div class="flex justify-between items-center mb-2">
+          <div class="flex items-center gap-2">
+            <ng-icon name="heroLockClosed" class="text-[#628141] text-xl"></ng-icon>
+            <h3 class="font-bold text-[#1B211A] text-lg">Role & Access</h3>
+          </div>
+          <button
+            (click)="openEdit()"
+            class="text-xs font-bold text-[#628141] hover:text-[#4a6331] transition"
+          >
+            Edit Role
+          </button>
+        </div>
+
+        <div
+          class="bg-[#FFFDF9] p-4 rounded-3xl shadow-sm border border-[#EBD5AB]/50 flex flex-col gap-3"
+        >
+          @for (perm of permissions; track perm.name) {
+            <div
+              class="flex items-center justify-between p-3 rounded-2xl bg-[#F9F5F0] border border-gray-100"
+            >
+              <div class="flex items-center gap-3">
+                <div
+                  class="w-10 h-10 rounded-full flex items-center justify-center shadow-sm"
+                  [ngClass]="perm.granted ? 'bg-white text-[#628141]' : 'bg-gray-100 text-gray-400'"
+                >
+                  <ng-icon
+                    [name]="perm.granted ? 'heroCheckCircle' : 'heroLockClosed'"
+                    class="text-xl"
+                  ></ng-icon>
+                </div>
+                <div>
+                  <h4 class="text-sm font-bold text-[#1B211A]">{{ perm.name }}</h4>
+                  <p class="text-[10px] text-gray-500">{{ perm.desc }}</p>
+                </div>
+              </div>
+              <div
+                class="w-5 h-5 rounded-full flex items-center justify-center"
+                [ngClass]="perm.granted ? 'bg-[#628141] text-white' : 'bg-gray-200 text-gray-400'"
+              >
+                <ng-icon
+                  [name]="perm.granted ? 'heroCheckCircle' : 'heroLockClosed'"
+                  class="text-sm"
+                ></ng-icon>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-6">
+        <div class="flex justify-between items-center mb-2">
+          <div class="flex items-center gap-2">
+            <ng-icon name="heroClock" class="text-[#628141] text-xl"></ng-icon>
+            <h3 class="font-bold text-[#1B211A] text-lg">Audit Log</h3>
+          </div>
+          <button class="text-xs font-bold text-[#628141] hover:text-[#4a6331] transition">
+            View All
+          </button>
+        </div>
+
+        <div
+          class="bg-[#FFFDF9] p-6 rounded-3xl shadow-sm border border-[#EBD5AB]/50 flex-1 relative"
+        >
+          <div class="absolute left-9 top-10 bottom-10 w-0.5 bg-gray-100 z-0"></div>
+
+          <div class="flex flex-col gap-6 relative z-10">
+            @for (log of auditLogs; track log.action) {
+              <div class="flex gap-4">
+                <div
+                  class="w-12 h-6 mt-0.5 shrink-0 rounded flex items-center justify-center text-[9px] font-bold uppercase tracking-wider"
+                  [ngClass]="log.color"
+                >
+                  {{ log.action }}
+                </div>
+                <div>
+                  <div class="flex justify-between items-start mb-1">
+                    <p class="text-xs text-gray-400 font-medium">{{ log.time }}</p>
+                  </div>
+                  <p class="text-sm font-medium text-[#1B211A] leading-snug">{{ log.desc }}</p>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="px-8 py-5 bg-[#FFFDF9] border-t border-[#EBD5AB]/50 rounded-b-4xl flex justify-end gap-3 shrink-0"
+    >
+      <button
+        (click)="closeModal()"
+        class="px-6 py-2.5 bg-transparent text-gray-500 rounded-xl text-sm font-bold hover:bg-gray-100 transition cursor-pointer"
+      >
+        Close
+      </button>
+      <button
+        (click)="openEdit()"
+        class="flex items-center gap-2 bg-[#628141] text-white px-6 py-2.5 rounded-xl text-sm font-bold hover:bg-[#526f35] shadow-lg transition"
+      >
+        <ng-icon name="heroPencilSquare" class="text-lg"></ng-icon> Edit User
+      </button>
+    </div>
+  </div>
+</div>

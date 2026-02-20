@@ -9,4 +9,12 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.css',
 })
-export class Sidebar {}
+export class Sidebar {
+  // Variabel untuk nyimpen status sidebar (buka/tutup)
+  isSidebarOpen: boolean = true;
+
+  // Fungsi untuk mengubah status
+  toggleSidebar() {
+    this.isSidebarOpen = !this.isSidebarOpen;
+  }
+}

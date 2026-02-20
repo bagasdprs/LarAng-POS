@@ -1,0 +1,211 @@
+<div class="flex flex-col max-w-7xl mx-auto pb-10 relative">
+  <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+    <div>
+      <div
+        class="flex items-center gap-2 text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-2"
+      >
+        <a routerLink="/dashboard" class="hover:text-[#628141] transition cursor-pointer"
+          >Dashboard</a
+        >
+        <span>/</span>
+        <span class="text-[#1B211A]">Users</span>
+      </div>
+
+      <h1 class="text-2xl font-bold text-[#1B211A]">User Management</h1>
+      <p class="text-sm text-gray-500 mt-1">Manage access, roles, and permissions for your team.</p>
+    </div>
+    <button
+      (click)="openAddModal()"
+      class="flex items-center gap-2 bg-[#628141] text-white px-5 py-2.5 rounded-lg text-sm font-bold hover:bg-[#526f35] shadow-lg transition"
+    >
+      <ng-icon name="heroPlus" class="text-lg"></ng-icon> Add New User
+    </button>
+  </div>
+
+  <div
+    class="flex flex-col lg:flex-row justify-between items-center gap-4 mb-8 bg-white p-2 rounded-2xl shadow-sm border border-gray-100"
+  >
+    <div class="relative w-full lg:w-80">
+      <ng-icon
+        name="heroMagnifyingGlass"
+        class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-lg"
+      ></ng-icon>
+      <input
+        type="text"
+        [(ngModel)]="searchQuery"
+        placeholder="Search users by name or email..."
+        class="w-full pl-11 pr-4 py-2.5 bg-gray-50 border border-transparent focus:border-gray-200 rounded-xl text-sm outline-none transition"
+      />
+    </div>
+    <div class="flex items-center gap-4 w-full lg:w-auto overflow-x-auto pb-2 lg:pb-0">
+      <div class="flex items-center gap-1">
+        <span
+          class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mr-2 hidden md:block"
+          >VIEW:</span
+        >
+        <button
+          (click)="setViewMode('grid')"
+          [ngClass]="
+            viewMode === 'grid' ? 'text-[#628141] bg-green-50' : 'text-gray-400 hover:bg-gray-100'
+          "
+          class="p-2 rounded-lg transition"
+        >
+          <ng-icon name="heroSquares2x2" class="text-2xl"></ng-icon>
+        </button>
+        <button
+          (click)="setViewMode('list')"
+          [ngClass]="
+            viewMode === 'list' ? 'text-[#628141] bg-green-50' : 'text-gray-400 hover:bg-gray-100'
+          "
+          class="p-2 rounded-lg transition"
+        >
+          <ng-icon name="heroListBullet" class="text-2xl"></ng-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  @if (viewMode === 'grid') {
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      @for (user of users; track user.id) {
+        <div
+          [ngClass]="user.status ? 'bg-[#EBD5AB] border-transparent' : 'bg-white border-gray-200'"
+          class="rounded-3xl p-6 flex flex-col items-center relative shadow-sm border transition"
+        >
+          <div class="absolute top-4 right-4 group">
+            <button class="text-gray-500 hover:text-black transition p-2">
+              <ng-icon name="heroEllipsisVertical" class="text-xl"></ng-icon>
+            </button>
+            <div
+              class="absolute right-0 mt-1 w-32 bg-white rounded-xl shadow-xl border border-gray-100 py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10"
+            >
+              <button
+                (click)="openDetailModal(user)"
+                class="w-full text-left px-4 py-2 text-xs font-bold text-gray-700 hover:bg-gray-50 hover:text-[#628141] cursor-pointer"
+              >
+                View Detail
+              </button>
+              <button
+                (click)="openEditModal(user)"
+                class="w-full text-left px-4 py-2 text-xs font-bold text-gray-700 hover:bg-gray-50 hover:text-[#628141] cursor-pointer"
+              >
+                Edit
+              </button>
+              <div class="border-t border-gray-100 my-1"></div>
+              <button
+                class="w-full text-left px-4 py-2 text-xs font-bold text-red-600 hover:bg-red-50 transition cursor-pointer"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+
+          <div class="relative w-20 h-20 mb-4">
+            <img
+              [src]="user.avatar"
+              class="w-full h-full rounded-full object-cover border-4 border-white shadow-sm"
+            />
+            <div class="absolute bottom-0 right-0 bg-white rounded-full">
+              <ng-icon
+                name="heroCheckCircle"
+                [ngClass]="user.status ? 'text-[#628141]' : 'text-gray-400'"
+                class="text-xl"
+              ></ng-icon>
+            </div>
+          </div>
+
+          <h3 class="font-bold text-lg text-[#1B211A] mb-1">{{ user.name }}</h3>
+          <p class="text-xs text-gray-600 mb-3">{{ user.email }}</p>
+          <span
+            class="px-3 py-1 bg-white/60 backdrop-blur rounded-full text-xs font-bold text-[#1B211A] mb-6 shadow-sm"
+            >{{ user.role }}</span
+          >
+
+          <div
+            class="w-full flex items-center justify-between mt-auto pt-4 border-t border-black/10"
+          >
+            <div class="flex items-center gap-2">
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" [(ngModel)]="user.status" class="sr-only peer" />
+                <div
+                  class="w-8 h-4 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-[#628141]"
+                ></div>
+              </label>
+              <span class="text-[10px] font-bold text-gray-700 uppercase">{{
+                user.status ? 'Active' : 'Inactive'
+              }}</span>
+            </div>
+            <div class="flex gap-2">
+              <button
+                (click)="openEditModal(user)"
+                class="p-1.5 hover:bg-white/50 rounded-lg text-gray-700 transition"
+              >
+                <ng-icon name="heroPencilSquare"></ng-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  } @else {
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+      <table class="w-full text-left border-collapse">
+        <thead class="bg-gray-50/50">
+          <tr class="border-b border-gray-100">
+            <th class="py-4 px-6 text-[11px] font-bold text-gray-500 uppercase tracking-wider">
+              Name
+            </th>
+            <th class="py-4 px-6 text-[11px] font-bold text-gray-500 uppercase tracking-wider">
+              Role
+            </th>
+            <th
+              class="py-4 px-6 text-center text-[11px] font-bold text-gray-500 uppercase tracking-wider"
+            >
+              Actions
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (user of users; track user.id) {
+            <tr class="border-b border-gray-50 hover:bg-gray-50/80 transition">
+              <td class="py-4 px-6 font-bold text-sm flex items-center gap-3">
+                <img [src]="user.avatar" class="w-8 h-8 rounded-full object-cover shadow-sm" />
+                {{ user.name }}
+              </td>
+              <td class="py-4 px-6 text-sm text-gray-600">{{ user.role }}</td>
+              <td class="py-4 px-6 text-center flex justify-center gap-2">
+                <button
+                  (click)="openDetailModal(user)"
+                  class="p-2 text-gray-400 hover:text-[#1B211A] hover:bg-gray-100 rounded-lg transition"
+                  title="View Details"
+                >
+                  <ng-icon name="heroEye"></ng-icon>
+                </button>
+                <button
+                  (click)="openEditModal(user)"
+                  class="p-2 text-gray-400 hover:text-[#628141] hover:bg-green-50 rounded-lg transition"
+                  title="Edit"
+                >
+                  <ng-icon name="heroPencilSquare"></ng-icon>
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+  @if (isModalOpen) {
+    <app-user-form [editData]="selectedUserForEdit" (close)="closeModal()"></app-user-form>
+  }
+
+  @if (isDetailModalOpen) {
+    <app-user-detail
+      [detailData]="selectedUserForDetail"
+      (close)="closeDetailModal()"
+      (edit)="switchToEditModal($event)"
+    >
+    </app-user-detail>
+  }
+</div>

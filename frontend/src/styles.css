@@ -1,3 +1,48 @@
 /* You can add global styles to this file, and also import other style files */
 
-@import "tailwindcss";
+@import 'tailwindcss';
+
+/* ============================================================
+   CUSTOM SCROLLBAR (Biar gak jelek kayak bawaan Windows 😂)
+   ============================================================ */
+
+/* Lebar scrollbar vertikal dan horizontal */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+/* Track (Jalur background scrollbar) */
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 10px;
+}
+
+/* Thumb (Batang scrollbar yang bisa ditarik) */
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #e5e7eb; /* Warna abu-abu super soft */
+  border-radius: 10px;
+  transition: background 0.3s ease;
+}
+
+/* Saat scrollbar di-hover pakai mouse */
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #628141; /* Berubah jadi hijau Larang POS pas disentuh */
+}
+
+/* Sembunyikan panah atas-bawah di scrollbar */
+.custom-scrollbar::-webkit-scrollbar-button {
+  display: none;
+}
+
+/* ============================================================
+    INVISIBLE SCROLLBAR (Scroll jalan, tapi bar-nya hilang)
+   ============================================================ */
+.no-scrollbar::-webkit-scrollbar {
+  display: none; /* Sembunyikan di Chrome, Safari, Edge */
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none; /* Sembunyikan di IE and Edge lawas */
+  scrollbar-width: none; /* Sembunyikan di Firefox */
+}
