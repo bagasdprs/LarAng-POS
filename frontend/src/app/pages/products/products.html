@@ -61,88 +61,181 @@
     </div>
   </div>
 
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-    @for (product of products; track product.id) {
-      <div
-        class="bg-[#EBD5AB] p-4 rounded-3xl relative group hover:shadow-lg transition-all duration-300"
+  @if (isLoading) {
+    <div
+      class="flex flex-col items-center justify-center py-32 bg-white/50 backdrop-blur-sm rounded-3xl border border-gray-100/50"
+    >
+      <svg
+        class="animate-spin h-12 w-12 text-[#1B211A] mb-4"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
       >
-        <button
-          (click)="toggleMenu(product.id, $event)"
-          class="absolute top-4 right-4 w-8 h-8 bg-white/50 hover:bg-white rounded-full flex items-center justify-center backdrop-blur-sm transition z-10"
-        >
-          <ng-icon name="heroEllipsisHorizontal" class="text-[#1B211A]"></ng-icon>
-        </button>
-
-        @if (activeMenuId === product.id) {
+        <circle
+          class="opacity-25"
+          cx="12"
+          cy="12"
+          r="10"
+          stroke="currentColor"
+          stroke-width="4"
+        ></circle>
+        <path
+          class="opacity-75"
+          fill="currentColor"
+          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+        ></path>
+      </svg>
+      <p class="text-sm font-bold text-gray-500 tracking-wide animate-pulse">
+        Menyiapkan Data Produk...
+      </p>
+    </div>
+  } @else {
+    @if (viewMode === 'grid') {
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        @for (product of filteredProducts; track product.id) {
           <div
-            (click)="$event.stopPropagation()"
-            class="absolute top-12 right-4 bg-white rounded-xl shadow-xl border border-gray-100 w-40 py-2 z-20 animate-in fade-in zoom-in-95 duration-200"
+            class="bg-[#EBD5AB] p-4 rounded-3xl relative group hover:shadow-lg transition-all duration-300"
           >
-            <a
-              [routerLink]="['/products', product.id]"
-              class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2 cursor-pointer decoration-0"
-            >
-              <ng-icon name="heroMagnifyingGlass"></ng-icon> View Details
-            </a>
-
-            <a
-              [routerLink]="['/products', product.id, 'edit']"
-              class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2 cursor-pointer decoration-0"
-            >
-              <ng-icon name="heroPencilSquare"></ng-icon> Edit
-            </a>
-
-            <div class="h-px bg-gray-100 my-1"></div>
-
             <button
-              class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+              (click)="toggleMenu(product.id, $event)"
+              class="absolute top-4 right-4 w-8 h-8 bg-white/50 hover:bg-white rounded-full flex items-center justify-center backdrop-blur-sm transition z-10"
             >
-              <ng-icon name="heroTrash"></ng-icon> Delete Product
+              <ng-icon name="heroEllipsisHorizontal" class="text-[#1B211A]"></ng-icon>
             </button>
+
+            @if (activeMenuId === product.id) {
+              <div
+                (click)="$event.stopPropagation()"
+                class="absolute top-12 right-4 bg-white rounded-xl shadow-xl border border-gray-100 w-40 py-2 z-20 animate-in fade-in zoom-in-95 duration-200"
+              >
+                <a
+                  [routerLink]="['/products', product.id]"
+                  class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2 cursor-pointer decoration-0"
+                >
+                  <ng-icon name="heroMagnifyingGlass"></ng-icon> View Details
+                </a>
+                <a
+                  [routerLink]="['/products', product.id, 'edit']"
+                  class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2 cursor-pointer decoration-0"
+                >
+                  <ng-icon name="heroPencilSquare"></ng-icon> Edit
+                </a>
+                <div class="h-px bg-gray-100 my-1"></div>
+                <button
+                  class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+                >
+                  <ng-icon name="heroTrash"></ng-icon> Delete Product
+                </button>
+              </div>
+            }
+
+            <div class="aspect-square w-full bg-white rounded-2xl overflow-hidden mb-4 relative">
+              <img
+                [src]="product.image"
+                class="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+              />
+              <div class="absolute bottom-2 left-2">
+                @if (product.status === 'Low Stock') {
+                  <span
+                    class="bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-md shadow-sm flex items-center gap-1"
+                  >
+                    ⚠ Low Stock ({{ product.stock }})
+                  </span>
+                } @else {
+                  <span
+                    class="bg-black/70 backdrop-blur-md text-white text-[10px] font-bold px-2 py-1 rounded-md shadow-sm"
+                  >
+                    {{ product.stock }} in stock
+                  </span>
+                }
+              </div>
+            </div>
+
+            <div>
+              <span class="text-[10px] uppercase tracking-wider font-bold text-[#1B211A]/60">{{
+                product.category
+              }}</span>
+              <h3 class="text-lg font-bold text-[#1B211A] leading-tight mt-1 mb-3 truncate">
+                {{ product.name }}
+              </h3>
+
+              <div class="flex items-center justify-between">
+                <span class="text-xl font-bold text-[#1B211A]"
+                  >Rp {{ product.price | number: '1.0-0' }}</span
+                >
+                <a
+                  [routerLink]="['/products', product.id, 'edit']"
+                  class="w-10 h-10 bg-[#1B211A] rounded-full flex items-center justify-center text-white hover:bg-black transition transform hover:rotate-12 cursor-pointer"
+                >
+                  <ng-icon name="heroPencilSquare" class="text-lg"></ng-icon>
+                </a>
+              </div>
+            </div>
           </div>
         }
-
-        <div class="aspect-square w-full bg-white rounded-2xl overflow-hidden mb-4 relative">
-          <img
-            [src]="product.image"
-            class="w-full h-full object-cover group-hover:scale-105 transition duration-500"
-          />
-
-          <div class="absolute bottom-2 left-2">
-            @if (product.status === 'Low Stock') {
-              <span
-                class="bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-md shadow-sm flex items-center gap-1"
+      </div>
+    } @else {
+      <div class="flex flex-col gap-3">
+        @for (product of filteredProducts; track product.id) {
+          <div
+            class="bg-white p-3 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 group"
+          >
+            <div class="flex items-center gap-4">
+              <div
+                class="w-16 h-16 rounded-xl bg-[#F9F5F0] overflow-hidden relative border border-gray-100 shrink-0"
               >
-                ⚠ Low Stock ({{ product.stock }})
-              </span>
-            } @else {
-              <span
-                class="bg-black/70 backdrop-blur-md text-white text-[10px] font-bold px-2 py-1 rounded-md shadow-sm"
-              >
-                {{ product.stock }} in stock
-              </span>
-            }
-          </div>
-        </div>
+                <img
+                  [src]="product.image"
+                  class="w-full h-full object-cover group-hover:scale-110 transition duration-500"
+                />
+                @if (product.status === 'Low Stock') {
+                  <span
+                    class="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 border-2 border-white rounded-full shadow-sm"
+                  ></span>
+                }
+              </div>
 
-        <div>
-          <span class="text-[10px] uppercase tracking-wider font-bold text-[#1B211A]/60">{{
-            product.category
-          }}</span>
-          <h3 class="text-lg font-bold text-[#1B211A] leading-tight mt-1 mb-3 truncate">
-            {{ product.name }}
-          </h3>
+              <div class="flex flex-col">
+                <span class="text-[10px] uppercase tracking-wider font-bold text-gray-400 mb-0.5">{{
+                  product.category
+                }}</span>
+                <h3 class="text-base font-bold text-[#1B211A] leading-tight">{{ product.name }}</h3>
+                <p
+                  class="text-xs font-medium mt-1"
+                  [class]="product.status === 'Low Stock' ? 'text-red-500' : 'text-green-600'"
+                >
+                  ● {{ product.stock }} Units
+                </p>
+              </div>
+            </div>
 
-          <div class="flex items-center justify-between">
-            <span class="text-xl font-bold text-[#1B211A]">${{ product.price.toFixed(2) }}</span>
-            <button
-              class="w-10 h-10 bg-[#1B211A] rounded-full flex items-center justify-center text-white hover:bg-black transition transform hover:rotate-12"
+            <div
+              class="flex items-center gap-6 mt-4 sm:mt-0 w-full sm:w-auto justify-between sm:justify-end"
             >
-              <ng-icon name="heroPencilSquare" class="text-lg"></ng-icon>
-            </button>
+              <span class="text-lg font-bold text-[#628141] whitespace-nowrap"
+                >Rp {{ product.price | number: '1.0-0' }}</span
+              >
+
+              <div class="flex items-center gap-1.5">
+                <a
+                  [routerLink]="['/products', product.id]"
+                  class="w-9 h-9 bg-gray-50 text-gray-600 hover:text-[#628141] hover:bg-green-50 rounded-full flex items-center justify-center transition border border-transparent hover:border-green-100"
+                  title="View Details"
+                >
+                  <ng-icon name="heroMagnifyingGlass"></ng-icon>
+                </a>
+                <a
+                  [routerLink]="['/products', product.id, 'edit']"
+                  class="w-9 h-9 bg-gray-50 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-full flex items-center justify-center transition border border-transparent hover:border-blue-100"
+                  title="Edit Product"
+                >
+                  <ng-icon name="heroPencilSquare"></ng-icon>
+                </a>
+              </div>
+            </div>
           </div>
-        </div>
+        }
       </div>
     }
-  </div>
+  }
 </div>

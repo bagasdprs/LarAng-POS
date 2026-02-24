@@ -16,6 +16,13 @@
       >
         <ng-icon name="heroArrowLeft"></ng-icon> Back to List
       </a>
+
+      <button
+        (click)="deleteItem()"
+        class="flex items-center gap-2 px-5 py-2.5 bg-red-50 text-red-600 border border-red-200 rounded-lg text-sm font-medium hover:bg-red-100 transition shadow-sm"
+      >
+        <ng-icon name="heroTrash"></ng-icon> Delete
+      </button>
       <a
         [routerLink]="['/products', productId, 'edit']"
         class="flex items-center gap-2 px-5 py-2.5 bg-[#1B211A] text-white rounded-lg text-sm font-medium hover:bg-black transition shadow-lg"
@@ -25,151 +32,158 @@
     </div>
   </div>
 
-  <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8">
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
-      <div class="flex flex-col gap-4">
-        <div
-          class="aspect-square bg-[#F9F5F0] rounded-2xl overflow-hidden relative flex items-center justify-center group"
-        >
-          <img
-            [src]="product.image"
-            class="w-full h-full object-cover mix-blend-multiply group-hover:scale-105 transition duration-500"
-          />
-
-          <span
-            class="absolute top-4 right-4 bg-white/90 backdrop-blur text-[#628141] px-3 py-1 rounded-full text-xs font-bold shadow-sm flex items-center gap-1 border border-green-100"
-          >
-            <div class="w-2 h-2 rounded-full bg-[#628141]"></div>
-            {{ product.status }}
-          </span>
-        </div>
-
-        <div class="flex gap-4 overflow-x-auto pb-2">
-          <div class="w-20 h-20 rounded-xl border-2 border-[#1B211A] p-1 cursor-pointer">
-            <img [src]="product.image" class="w-full h-full object-cover rounded-lg" />
-          </div>
+  @if (isLoading) {
+    <div
+      class="flex flex-col items-center justify-center py-32 bg-white rounded-3xl border border-gray-100 shadow-sm p-8"
+    >
+      <svg
+        class="animate-spin h-12 w-12 text-[#628141] mb-4"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+      >
+        <circle
+          class="opacity-25"
+          cx="12"
+          cy="12"
+          r="10"
+          stroke="currentColor"
+          stroke-width="4"
+        ></circle>
+        <path
+          class="opacity-75"
+          fill="currentColor"
+          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+        ></path>
+      </svg>
+      <p class="text-sm font-bold text-gray-500 tracking-wide animate-pulse">
+        Menyiapkan Detail Produk...
+      </p>
+    </div>
+  } @else {
+    <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <div class="flex flex-col gap-4">
           <div
-            class="w-20 h-20 rounded-xl border border-gray-200 p-1 cursor-pointer hover:border-gray-400"
+            class="aspect-square bg-[#F9F5F0] rounded-2xl overflow-hidden relative flex items-center justify-center group"
           >
             <img
-              src="https://images.unsplash.com/photo-1541167760496-1628856ab772?auto=format&fit=crop&w=200&q=80"
-              class="w-full h-full object-cover rounded-lg"
+              [src]="product.image"
+              class="w-full h-full object-cover mix-blend-multiply group-hover:scale-105 transition duration-500"
             />
-          </div>
-          <div
-            class="w-20 h-20 rounded-xl border border-gray-200 p-1 cursor-pointer hover:border-gray-400"
-          >
-            <img
-              src="https://images.unsplash.com/photo-1497935586351-b67a49e012bf?auto=format&fit=crop&w=200&q=80"
-              class="w-full h-full object-cover rounded-lg"
-            />
-          </div>
-        </div>
-      </div>
 
-      <div class="flex flex-col">
-        <div class="flex justify-between items-start mb-4">
-          <span
-            class="px-3 py-1 bg-gray-100 text-gray-600 rounded-md text-[10px] font-bold uppercase tracking-wider"
-          >
-            {{ product.category }}
-          </span>
-          <div class="flex gap-3 text-gray-400">
-            <button class="hover:text-[#628141] transition">
-              <ng-icon name="heroShare" class="text-xl"></ng-icon>
-            </button>
-            <button class="hover:text-red-500 transition">
-              <ng-icon name="heroHeart" class="text-xl"></ng-icon>
-            </button>
-          </div>
-        </div>
-
-        <h2 class="text-3xl font-bold text-[#1B211A] mb-2">{{ product.name }}</h2>
-        <div class="flex items-center gap-3 mb-8">
-          <span class="text-3xl font-bold text-[#628141]">${{ product.price.toFixed(2) }}</span>
-          <span class="text-lg text-gray-400 line-through"
-            >${{ product.originalPrice.toFixed(2) }}</span
-          >
-          <span class="bg-[#EBD5AB] text-[#1B211A] px-2 py-1 rounded text-xs font-bold">
-            -{{ product.discount }}%
-          </span>
-        </div>
-
-        <div class="grid grid-cols-2 gap-y-6 gap-x-12 border-t border-b border-gray-100 py-6 mb-6">
-          <div>
-            <p class="text-[10px] text-gray-400 uppercase font-bold tracking-wider mb-1">
-              SKU Code
-            </p>
-            <p class="font-semibold text-gray-800">{{ product.sku }}</p>
-          </div>
-          <div>
-            <p class="text-[10px] text-gray-400 uppercase font-bold tracking-wider mb-1">
-              Category
-            </p>
-            <p class="font-semibold text-gray-800">{{ product.subCategory }}</p>
-          </div>
-          <div>
-            <p class="text-[10px] text-gray-400 uppercase font-bold tracking-wider mb-1">
-              Stock Level
-            </p>
-            <p class="font-semibold text-gray-800">
-              {{ product.stock }} Units
-              <span class="text-xs text-gray-400 font-normal ml-1"
-                >(Low at {{ product.minStock }})</span
-              >
-            </p>
-          </div>
-          <div>
-            <p class="text-[10px] text-gray-400 uppercase font-bold tracking-wider mb-1">
-              Supplier
-            </p>
-            <p class="font-semibold text-gray-800">{{ product.supplier }}</p>
-          </div>
-        </div>
-
-        <div class="mb-6">
-          <h3 class="text-sm font-bold text-[#1B211A] mb-2">Description</h3>
-          <p class="text-gray-600 text-sm leading-relaxed">{{ product.description }}</p>
-        </div>
-
-        <div class="mb-8">
-          <h3 class="text-sm font-bold text-[#1B211A] mb-3">Variants</h3>
-          <div class="flex gap-3">
-            @for (variant of product.variants; track variant) {
-              <button
-                class="px-4 py-2 border rounded-lg text-sm transition"
-                [class]="
-                  variant === 'Small (8oz)'
-                    ? 'border-[#628141] text-[#628141] bg-[#628141]/5 font-semibold'
-                    : 'border-gray-200 text-gray-600 hover:border-gray-300'
-                "
-              >
-                {{ variant }}
-              </button>
-            }
-          </div>
-        </div>
-
-        <div
-          class="mt-auto pt-6 flex items-center justify-between text-xs text-gray-400 border-t border-gray-100"
-        >
-          <div>
-            <span class="block">Last Updated</span>
-            <span class="text-gray-800 font-medium">{{ product.lastUpdated }}</span>
-          </div>
-          <div class="text-right flex items-center gap-2">
-            <div
-              class="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center text-green-700 font-bold text-[10px]"
+            <span
+              class="absolute top-4 right-4 bg-white/90 backdrop-blur text-[#628141] px-3 py-1 rounded-full text-xs font-bold shadow-sm flex items-center gap-1 border border-green-100"
             >
-              SJ
+              <div class="w-2 h-2 rounded-full bg-[#628141]"></div>
+              {{ product.status }}
+            </span>
+          </div>
+        </div>
+
+        <div class="flex flex-col">
+          <div class="flex justify-between items-start mb-4">
+            <span
+              class="px-3 py-1 bg-gray-100 text-gray-600 rounded-md text-[10px] font-bold uppercase tracking-wider"
+            >
+              {{ product.category }}
+            </span>
+            <div class="flex gap-3 text-gray-400">
+              <button class="hover:text-[#628141] transition">
+                <ng-icon name="heroShare" class="text-xl"></ng-icon>
+              </button>
+              <button class="hover:text-red-500 transition">
+                <ng-icon name="heroHeart" class="text-xl"></ng-icon>
+              </button>
+            </div>
+          </div>
+
+          <h2 class="text-3xl font-bold text-[#1B211A] mb-2">{{ product.name }}</h2>
+          <div class="flex items-center gap-3 mb-8">
+            <span class="text-3xl font-bold text-[#628141]"
+              >Rp {{ product.price | number: '1.0-0' }}</span
+            >
+            <span class="text-lg text-gray-400 line-through"
+              >Rp {{ product.originalPrice | number: '1.0-0' }}</span
+            >
+            <span class="bg-[#EBD5AB] text-[#1B211A] px-2 py-1 rounded text-xs font-bold">
+              -{{ product.discount }}%
+            </span>
+          </div>
+
+          <div
+            class="grid grid-cols-2 gap-y-6 gap-x-12 border-t border-b border-gray-100 py-6 mb-6"
+          >
+            <div>
+              <p class="text-[10px] text-gray-400 uppercase font-bold tracking-wider mb-1">
+                SKU Code
+              </p>
+              <p class="font-semibold text-gray-800">{{ product.sku }}</p>
             </div>
             <div>
-              <span class="block">Created By</span>
-              <span class="text-gray-800 font-medium">{{ product.createdBy }}</span>
+              <p class="text-[10px] text-gray-400 uppercase font-bold tracking-wider mb-1">
+                Category
+              </p>
+              <p class="font-semibold text-gray-800">{{ product.category }}</p>
+            </div>
+            <div>
+              <p class="text-[10px] text-gray-400 uppercase font-bold tracking-wider mb-1">
+                Stock Level
+              </p>
+              <p class="font-semibold text-gray-800">{{ product.stock }} Units</p>
+            </div>
+            <div>
+              <p class="text-[10px] text-gray-400 uppercase font-bold tracking-wider mb-1">
+                Supplier
+              </p>
+              <p class="font-semibold text-gray-800">{{ product.supplier }}</p>
+            </div>
+          </div>
+
+          <div class="mb-6">
+            <h3 class="text-sm font-bold text-[#1B211A] mb-2">Description</h3>
+            <p class="text-gray-600 text-sm leading-relaxed">{{ product.description }}</p>
+          </div>
+
+          <div class="mb-8">
+            <h3 class="text-sm font-bold text-[#1B211A] mb-3">Variants</h3>
+            <div class="flex gap-3">
+              @for (variant of product.variants; track variant) {
+                <button
+                  class="px-4 py-2 border rounded-lg text-sm transition"
+                  [class]="
+                    variant === 'Standard'
+                      ? 'border-[#628141] text-[#628141] bg-[#628141]/5 font-semibold'
+                      : 'border-gray-200 text-gray-600 hover:border-gray-300'
+                  "
+                >
+                  {{ variant }}
+                </button>
+              }
+            </div>
+          </div>
+
+          <div
+            class="mt-auto pt-6 flex items-center justify-between text-xs text-gray-400 border-t border-gray-100"
+          >
+            <div>
+              <span class="block">Last Updated</span>
+              <span class="text-gray-800 font-medium">{{ product.lastUpdated }}</span>
+            </div>
+            <div class="text-right flex items-center gap-2">
+              <div
+                class="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center text-green-700 font-bold text-[10px]"
+              >
+                SA
+              </div>
+              <div>
+                <span class="block">Created By</span>
+                <span class="text-gray-800 font-medium">Super Admin</span>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
+  }
 </div>

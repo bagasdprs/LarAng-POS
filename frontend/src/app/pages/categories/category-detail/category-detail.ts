@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
@@ -11,6 +11,7 @@ import {
   heroMagnifyingGlass,
   heroEllipsisVertical,
 } from '@ng-icons/heroicons/outline';
+import { CategoryService } from '../../../services/category';
 
 @Component({
   selector: 'app-category-detail',
@@ -31,64 +32,92 @@ import {
 })
 export class CategoryDetail implements OnInit {
   private route = inject(ActivatedRoute);
-  categoryId: string | null = null;
+  private categoryService = inject(CategoryService);
+  private cdr = inject(ChangeDetectorRef);
 
-  // Data Kategori
-  category = {
-    id: 'CAT-001',
-    name: 'Hot Beverages',
-    description:
-      'Premium selection of hand-crafted coffees, artisanal teas, and warm seasonal specialties served fresh daily.',
-    image:
-      'https://images.unsplash.com/photo-1572442388796-11668a67e53d?auto=format&fit=crop&w=500&q=80',
+  categoryId = this.route.snapshot.paramMap.get('id');
+
+  // 1. TAMBAH SAKLAR LOADING BIAR NGGAK NGE-KEDIP GAMBAR KOPI
+  isLoading: boolean = true;
+
+  category: any = {
+    id: '...',
+    name: 'Loading...',
+    description: 'Memuat data...',
+    image: null, // Kosongkan biar spinner jalan
     status: true,
-    revenue: 12450,
-    totalItems: 24,
+    revenue: 0,
+    totalItems: 0,
   };
 
-  // Data Tabel Produk di dalam Kategori ini
-  products = [
-    {
-      id: 1,
-      name: 'Caramel Macchiato',
-      price: 4.5,
-      stock: 'High',
-      stockColor: 'text-green-600 bg-green-50',
-      status: true,
-    },
-    {
-      id: 2,
-      name: 'Vanilla Latte',
-      price: 4.25,
-      stock: 'Low',
-      stockColor: 'text-orange-600 bg-orange-50',
-      status: true,
-    },
-    {
-      id: 3,
-      name: 'Earl Grey Tea',
-      price: 3.0,
-      stock: 'High',
-      stockColor: 'text-green-600 bg-green-50',
-      status: true,
-    },
-    {
-      id: 4,
-      name: 'Double Espresso',
-      price: 2.5,
-      stock: 'Out',
-      stockColor: 'text-red-600 bg-red-50',
-      status: false,
-    },
-  ];
+  products: any[] = [];
 
   ngOnInit() {
-    this.categoryId = this.route.snapshot.paramMap.get('id');
-    // Nanti fetch data dari database berdasarkan this.categoryId di sini
+    if (this.categoryId) {
+      this.loadCategoryDetail();
+    }
+  }
+
+  loadCategoryDetail() {
+    this.isLoading = true; // Nyalakan loading
+
+    this.categoryService.getCategoryById(this.categoryId!).subscribe({
+      next: (res: any) => {
+        const c = res.data;
+        this.category.id = c.id;
+        this.category.name = c.name;
+        this.category.description = c.description || 'Tidak ada deskripsi.';
+        this.category.totalItems = c.products_count || (c.products ? c.products.length : 0);
+        this.category.status = c.is_active === true || c.is_active === 1;
+
+        // Tarik gambar asli dari database atau pakai initial kalau kosong
+        this.category.image =
+          c.image_url ||
+          'https://ui-avatars.com/api/?name=' + c.name + '&background=EBD5AB&color=1B211A';
+
+        // Hitung total harga barang dikali stok untuk simulasi "Aset / Revenue" (Lebih masuk akal)
+        let totalAssetValue = 0;
+
+        // 2. MAPPING DATA PRODUK SESUAI HTML BARU
+        if (c.products && c.products.length > 0) {
+          this.products = c.products.map((p: any) => {
+            const priceNum = Number(p.price);
+            const stockNum = Number(p.stock);
+
+            totalAssetValue += priceNum * stockNum; // Tambah ke aset
+
+            return {
+              id: p.id,
+              name: p.name,
+              sku: p.sku || '-', // Panggil SKU
+              price: priceNum,
+              stock: stockNum, // Tetap biarkan ANGKA biar HTML bisa ngecek <= 10
+              status: stockNum <= (p.min_stock || 10) ? 'Low Stock' : 'Active',
+              image:
+                p.image_url ||
+                'https://images.unsplash.com/photo-1572442388796-11668a67e53d?auto=format&fit=crop&w=150&q=80', // Panggil gambar produk
+            };
+          });
+        } else {
+          this.products = [];
+        }
+
+        this.category.revenue = totalAssetValue; // Tampilkan aset
+        this.isLoading = false; // Matikan loading
+        this.cdr.detectChanges();
+      },
+      error: (err: any) => {
+        console.error('Gagal narik detail kategori', err);
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      },
+    });
   }
 
   toggleStatus() {
     this.category.status = !this.category.status;
-    alert(`Status kategori diubah menjadi: ${this.category.status ? 'Active' : 'Hidden'}`);
+    alert(
+      `Status diubah menjadi: ${this.category.status ? 'Active' : 'Hidden'} (Masih simulasi UI)`,
+    );
   }
 }

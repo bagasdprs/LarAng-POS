@@ -12,9 +12,12 @@ class Product extends Model
         'description',
         'sku',
         'price',
+        'cost_price',
         'stock',
+        'min_stock',
         'image_url',
-        'is_active'
+        'is_active',
+        'is_taxable'
     ];
 
     // Relasi: Produk milik SATU Kategori

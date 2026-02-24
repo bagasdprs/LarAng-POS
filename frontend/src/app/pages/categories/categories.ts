@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
@@ -12,11 +13,13 @@ import {
   heroPencilSquare,
   heroTrash,
 } from '@ng-icons/heroicons/outline';
+import { CategoryService } from '../../services/category'; // 👈 Panggil kurir
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-categories',
   standalone: true,
-  imports: [CommonModule, RouterLink, NgIconComponent],
+  imports: [CommonModule, FormsModule, RouterLink, NgIconComponent],
   viewProviders: [
     provideIcons({
       heroEllipsisVertical,
@@ -31,99 +34,138 @@ import {
   ],
   templateUrl: './categories.html',
 })
-export class Categories {
+export class Categories implements OnInit {
+  private categoryService = inject(CategoryService);
+  private cdr = inject(ChangeDetectorRef);
+
   activeMenuId: string | null = null;
+  categories: any[] = [];
+  isLoading: boolean = true;
+  searchQuery: string = '';
+
+  insights = [
+    {
+      label: 'Largest Category',
+      value: 'Loading...',
+      icon: 'heroSparkles',
+      color: 'bg-green-100 text-green-700',
+    },
+    {
+      label: 'Total Categories',
+      value: 'Loading...',
+      icon: 'heroCube',
+      color: 'bg-orange-100 text-orange-700',
+    },
+    {
+      label: 'Total Products',
+      value: 'Loading...',
+      icon: 'heroMagnifyingGlass',
+      color: 'bg-blue-100 text-blue-700',
+    },
+  ];
+
+  get filteredCategories() {
+    if (!this.searchQuery.trim()) {
+      return this.categories;
+    }
+
+    const lowerCaseQuery = this.searchQuery.toLowerCase();
+    return this.categories.filter((cat) => cat.name.toLowerCase().includes(lowerCaseQuery));
+  }
+
+  ngOnInit() {
+    this.fetchCategories();
+  }
+
+  fetchCategories() {
+    this.isLoading = true;
+
+    this.categoryService.getCategories().subscribe({
+      next: (res: any) => {
+        this.categories = res.data.map((cat: any) => {
+          const itemCount = cat.products_count || 0;
+
+          let badgeText = 'STOCKED';
+          let badgeClass = 'bg-white/60 text-green-700';
+          let dotClass = 'bg-green-600';
+
+          if (itemCount === 0) {
+            badgeText = 'EMPTY';
+            badgeClass = 'bg-white/60 text-gray-500';
+            dotClass = 'bg-gray-400';
+          }
+
+          return {
+            id: cat.id.toString(),
+            name: cat.name,
+            count: itemCount,
+            image:
+              cat.image_url ||
+              'https://ui-avatars.com/api/?name=' + cat.name + '&background=EBD5AB&color=1B211A',
+            badgeText: badgeText,
+            badgeClass: badgeClass,
+            dotClass: dotClass,
+          };
+        });
+
+        const totalCat = this.categories.length;
+        if (totalCat === 0) {
+          this.insights[0].value = '-';
+          this.insights[1].value = '0 Categories';
+          this.insights[2].value = '0 Items';
+        } else {
+          const largest = this.categories.reduce((prev, current) =>
+            prev.count > current.count ? prev : current,
+          );
+          this.insights[0].value = largest.name;
+          this.insights[1].value = `${totalCat} Categories`;
+
+          const totalProd = this.categories.reduce((sum, cat) => sum + cat.count, 0);
+          this.insights[2].value = `${totalProd} Items`;
+        }
+
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      },
+      error: (err: any) => {
+        console.error('Gagal memuat kategori:', err);
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      },
+    });
+  }
 
   toggleMenu(id: string, event: Event) {
     event.stopPropagation();
-    if (this.activeMenuId === id) {
-      this.activeMenuId = null;
-    } else {
-      this.activeMenuId = id;
-    }
+    this.activeMenuId = this.activeMenuId === id ? null : id;
   }
 
   closeMenu() {
     this.activeMenuId = null;
   }
 
-  // Data Dummy Kategori dengan Status Stok Agregat
-  categories = [
-    {
-      id: '1',
-      name: 'Hot Beverages',
-      count: 24,
-      image:
-        'https://images.unsplash.com/photo-1572442388796-11668a67e53d?auto=format&fit=crop&w=500&q=80',
-      stockStatus: 'Safe', // Aman
-      lowStockCount: 0,
-    },
-    {
-      id: '2',
-      name: 'Artisan Bakery',
-      count: 12,
-      image:
-        'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=500&q=80',
-      stockStatus: 'Alert', // Bahaya
-      lowStockCount: 3, // Ada 3 roti mau abis
-    },
-    {
-      id: '3',
-      name: 'Fresh Salads',
-      count: 8,
-      image:
-        'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=500&q=80',
-      stockStatus: 'Safe',
-      lowStockCount: 0,
-    },
-    {
-      id: '4',
-      name: 'Fine Desserts',
-      count: 15,
-      image:
-        'https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?auto=format&fit=crop&w=500&q=80',
-      stockStatus: 'Safe',
-      lowStockCount: 0,
-    },
-    {
-      id: '5',
-      name: 'Cold Press',
-      count: 10,
-      image:
-        'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&w=500&q=80',
-      stockStatus: 'Alert',
-      lowStockCount: 2,
-    },
-    {
-      id: '6',
-      name: 'Merch & Tools',
-      count: 45,
-      image:
-        'https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=500&q=80',
-      stockStatus: 'Safe',
-      lowStockCount: 0,
-    },
-  ];
-
-  // Data Insight di Bawah (Bonus Fitur Keren)
-  insights = [
-    {
-      label: 'Top Performing',
-      value: 'Hot Beverages',
-      icon: 'heroSparkles',
-      color: 'bg-green-100 text-green-700',
-    },
-    {
-      label: 'Total Items',
-      value: '114 SKUs',
-      icon: 'heroCube',
-      color: 'bg-orange-100 text-orange-700',
-    },
-    {
-      label: 'Most Viewed',
-      value: 'Artisan Bakery',
-      icon: 'heroEye',
-      color: 'bg-blue-100 text-blue-700',
-    },
-  ];
+  deleteCategory(id: string, name: string) {
+    Swal.fire({
+      title: 'Hapus Kategori?',
+      text: `Kamu yakin ingin menghapus kategori "${name}"? Data yang dihapus tidak bisa dikembalikan.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Ya, Hapus!',
+      cancelButtonText: 'Batal',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.categoryService.deleteCategory(id).subscribe({
+          next: () => {
+            Swal.fire('Terhapus!', 'Kategori berhasil dihapus.', 'success');
+            this.fetchCategories();
+          },
+          error: (err: any) => {
+            Swal.fire('Gagal!', err.error?.message || 'Tidak bisa menghapus kategori.', 'error');
+          },
+        });
+      }
+    });
+  }
 }
