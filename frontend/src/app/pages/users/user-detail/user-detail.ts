@@ -1,7 +1,6 @@
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
-// 🔥 11 ICON WAJIB TERPAKAI SEMUA!
 import {
   heroXMark,
   heroUser,
@@ -38,12 +37,9 @@ import {
   templateUrl: './user-detail.html',
 })
 export class UserDetail implements OnInit {
-  // Terima data user yang diklik dari Parent
   @Input() detailData: any = null;
-
-  // Kirim sinyal ke Parent
   @Output() close = new EventEmitter<void>();
-  @Output() edit = new EventEmitter<any>(); // Buat lempar ke pop-up Edit
+  @Output() edit = new EventEmitter<any>();
 
   user: any = null;
 
@@ -61,25 +57,10 @@ export class UserDetail implements OnInit {
       time: '1 hour ago',
       color: 'bg-green-100 text-green-700',
     },
-    {
-      action: 'Inventory',
-      desc: "Updated stock for 'Organic Coffee Beans'",
-      time: 'Yesterday',
-      color: 'bg-orange-100 text-orange-700',
-    },
-    {
-      action: 'Shift',
-      desc: 'Clocked out for the day (8h 15m)',
-      time: 'Yesterday',
-      color: 'bg-blue-100 text-blue-700',
-    },
   ];
-
   permissions = [
     { name: 'POS Terminal', desc: 'Full Access', granted: true },
     { name: 'Inventory', desc: 'View & Edit', granted: true },
-    { name: 'Staff Mgmt', desc: 'View Only', granted: true },
-    { name: 'System Settings', desc: 'No Access', granted: false },
   ];
 
   ngOnInit() {
@@ -91,15 +72,45 @@ export class UserDetail implements OnInit {
   closeModal() {
     this.close.emit();
   }
-
   openEdit() {
     this.edit.emit(this.user);
   }
 
-  deactivateUser() {
-    if (confirm(`Are you sure you want to deactivate ${this.user?.name}?`)) {
-      alert('User deactivated!');
-      this.closeModal();
+  // ==========================================
+  // IMPLEMENTASI 4 FUNCTION: DEACTIVATE/DELETE
+  // ==========================================
+
+  // Function 1: Trigger saat tombol Deactivate diklik (Munculin peringatan)
+  onDeactivateClick() {
+    if (confirm(`⚠️ PERINGATAN! Yakin ingin menonaktifkan akses untuk ${this.user?.name}?`)) {
+      this.processDeactivation();
     }
+  }
+
+  // Function 2: Proses Eksekusi (Siap diganti panggil API Delete Laravel)
+  private processDeactivation() {
+    console.log('Mengeksekusi penonaktifan untuk user ID:', this.user?.id);
+
+    // Simulasi proses API
+    setTimeout(() => {
+      const isSuccess = true;
+      if (isSuccess) {
+        this.handleDeactivationSuccess();
+      } else {
+        this.handleDeactivationError(new Error('Gagal merespon server database.'));
+      }
+    }, 500);
+  }
+
+  // Function 3: Penanganan jika API Sukses
+  private handleDeactivationSuccess() {
+    alert(`Akses untuk ${this.user?.name} telah dicabut secara permanen!`);
+    this.closeModal();
+  }
+
+  // Function 4: Penanganan jika API Gagal
+  private handleDeactivationError(err: any) {
+    console.error('Gagal menonaktifkan user:', err);
+    alert('Operasi gagal! Silakan coba lagi beberapa saat.');
   }
 }

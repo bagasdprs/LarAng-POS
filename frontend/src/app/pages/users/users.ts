@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core'; // 👈 Tambahkan OnInit & inject
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -17,6 +17,7 @@ import {
 
 import { UserForm } from './user-form/user-form';
 import { UserDetail } from './user-detail/user-detail';
+import { UserService } from '../../services/user';
 
 @Component({
   selector: 'app-users',
@@ -37,69 +38,76 @@ import { UserDetail } from './user-detail/user-detail';
   ],
   templateUrl: './users.html',
 })
-export class Users {
-  viewMode: 'grid' | 'list' = 'grid';
+export class Users implements OnInit {
+  private userService = inject(UserService);
+  private cdr = inject(ChangeDetectorRef);
+
+  viewMode: 'grid' | 'list' = 'list';
   activeFilter: string = 'All Roles';
   searchQuery: string = '';
 
-  users = [
-    {
-      id: 'USR-001',
-      name: 'Sarah Jenkins',
-      email: 'sarah.j@larangpos.com',
-      role: 'Store Manager',
-      status: true,
-      lastLogin: '2 min ago',
-      avatar:
-        'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80',
-    },
-    {
-      id: 'USR-002',
-      name: 'Mike Ross',
-      email: 'mike.ross@larangpos.com',
-      role: 'Cashier',
-      status: true,
-      lastLogin: '1 hour ago',
-      avatar:
-        'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=150&q=80',
-    },
-    {
-      id: 'USR-003',
-      name: 'Elena Fisher',
-      email: 'elena.f@larangpos.com',
-      role: 'Admin',
-      status: false,
-      lastLogin: '5 days ago',
-      avatar:
-        'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=150&q=80',
-    },
-    {
-      id: 'USR-004',
-      name: 'David Chen',
-      email: 'david.c@larangpos.com',
-      role: 'Sales Associate',
-      status: true,
-      lastLogin: '10 mins ago',
-      avatar:
-        'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80',
-    },
-  ];
+  users: any[] = [];
+  isLoading = true;
 
-  // ================= MODAL ADD/EDIT STATE =================
+  // Modal States
   isModalOpen = false;
   selectedUserForEdit: any = null;
-
-  // ================= MODAL DETAIL STATE =================
   isDetailModalOpen = false;
   selectedUserForDetail: any = null;
 
+  // ==========================================
+  // JALANKAN SAAT HALAMAN DIBUKA
+  // ==========================================
+  ngOnInit() {
+    this.fetchUsers();
+  }
+
+  fetchUsers() {
+    this.isLoading = true;
+    this.userService.getUsers().subscribe({
+      next: (res) => {
+        this.users = res.data.map((user: any) => ({
+          ...user,
+          role: user.role_name ? user.role_name : 'Menunggu Approval',
+          avatar: `https://ui-avatars.com/api/?name=${user.name}&background=EBD5AB&color=1B211A`,
+          status: user.role_id !== null,
+        }));
+        this.isLoading = false;
+        console.log('Data User Asli:', this.users);
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Gagal ambil data user:', err);
+        this.isLoading = false;
+      },
+    });
+  }
+
+  // Fungsi Approve Kasir
+  approveUser(userId: number) {
+    if (confirm('Yakin ingin menyetujui user ini sebagai Kasir?')) {
+      this.userService.approveKasir(userId).subscribe({
+        next: (res) => {
+          alert('User berhasil di-approve!');
+          this.fetchUsers();
+        },
+        error: (err) => {
+          alert('Gagal meng-approve user!');
+          console.error(err);
+        },
+      });
+    }
+  }
+
+  // ==========================================
+  // FUNGSI UI BAWAAN KAMU (GAK DIUBAH)
+  // ==========================================
   setViewMode(mode: 'grid' | 'list') {
     this.viewMode = mode;
   }
   setFilter(role: string) {
     this.activeFilter = role;
   }
-
   openAddModal() {
     this.selectedUserForEdit = null;
     this.isModalOpen = true;
@@ -112,7 +120,6 @@ export class Users {
     this.isModalOpen = false;
     this.selectedUserForEdit = null;
   }
-
   openDetailModal(user: any) {
     this.selectedUserForDetail = user;
     this.isDetailModalOpen = true;

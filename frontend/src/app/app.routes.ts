@@ -1,7 +1,6 @@
 import { Routes } from '@angular/router';
 import { MainLayout } from './layouts/main-layout/main-layout';
 import { Dashboard } from './pages/dashboard/dashboard';
-import { Login } from './pages/login/login';
 import { Products } from './pages/products/products';
 import { ProductDetail } from './pages/products/product-detail/product-detail';
 import { ProductForm } from './pages/products/product-form/product-form';
@@ -13,10 +12,16 @@ import { UserForm } from './pages/users/user-form/user-form';
 import { UserDetail } from './pages/users/user-detail/user-detail';
 
 export const routes: Routes = [
+  // ========= ROUTING AUTHENTICATION ==========
   {
     path: 'login',
-    component: Login,
+    loadComponent: () => import('./pages/auth/login/login').then((m) => m.Login),
   },
+  {
+    path: 'register',
+    loadComponent: () => import('./pages/auth/register/register').then((m) => m.Register),
+  },
+
   {
     path: '',
     component: MainLayout,

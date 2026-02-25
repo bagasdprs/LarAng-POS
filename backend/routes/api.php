@@ -16,6 +16,8 @@ use App\Http\Controllers\CategoryController;
 
 // 1. Public Routes (Bisa diakses tanpa login)
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/register', [AuthController::class, 'register']);
+
 Route::get('/dashboard/stats', [DashboardController::class, 'getStats']); // Dashboard Stats
 Route::get('/products', [ProductController::class, 'index']); // List Produk
 Route::post('/products', [ProductController::class, 'store']); // Tambah Produk (Buat Admin)
@@ -34,13 +36,15 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
+    Route::get('/users', [\App\Http\Controllers\Api\UserController::class, 'index']);
+    Route::put('/users/{id}/approve', [\App\Http\Controllers\Api\UserController::class, 'approveAsKasir']);
+    Route::post('/users', [\App\Http\Controllers\Api\UserController::class, 'store']); // Untuk Create
+    Route::put('/users/{id}', [\App\Http\Controllers\Api\UserController::class, 'update']); // Untuk Edit
 
     // Logout
     Route::post('/logout', [AuthController::class, 'logout']);
 
     // POS Features
-
-
     Route::post('/transactions', [TransactionController::class, 'store']); // Checkout
 
 

@@ -10,7 +10,6 @@
         <span>/</span>
         <span class="text-[#1B211A]">Users</span>
       </div>
-
       <h1 class="text-2xl font-bold text-[#1B211A]">User Management</h1>
       <p class="text-sm text-gray-500 mt-1">Manage access, roles, and permissions for your team.</p>
     </div>
@@ -65,147 +64,206 @@
     </div>
   </div>
 
-  @if (viewMode === 'grid') {
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-      @for (user of users; track user.id) {
-        <div
-          [ngClass]="user.status ? 'bg-[#EBD5AB] border-transparent' : 'bg-white border-gray-200'"
-          class="rounded-3xl p-6 flex flex-col items-center relative shadow-sm border transition"
-        >
-          <div class="absolute top-4 right-4 group">
-            <button class="text-gray-500 hover:text-black transition p-2">
-              <ng-icon name="heroEllipsisVertical" class="text-xl"></ng-icon>
-            </button>
-            <div
-              class="absolute right-0 mt-1 w-32 bg-white rounded-xl shadow-xl border border-gray-100 py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10"
-            >
-              <button
-                (click)="openDetailModal(user)"
-                class="w-full text-left px-4 py-2 text-xs font-bold text-gray-700 hover:bg-gray-50 hover:text-[#628141] cursor-pointer"
-              >
-                View Detail
-              </button>
-              <button
-                (click)="openEditModal(user)"
-                class="w-full text-left px-4 py-2 text-xs font-bold text-gray-700 hover:bg-gray-50 hover:text-[#628141] cursor-pointer"
-              >
-                Edit
-              </button>
-              <div class="border-t border-gray-100 my-1"></div>
-              <button
-                class="w-full text-left px-4 py-2 text-xs font-bold text-red-600 hover:bg-red-50 transition cursor-pointer"
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-
-          <div class="relative w-20 h-20 mb-4">
-            <img
-              [src]="user.avatar"
-              class="w-full h-full rounded-full object-cover border-4 border-white shadow-sm"
-            />
-            <div class="absolute bottom-0 right-0 bg-white rounded-full">
-              <ng-icon
-                name="heroCheckCircle"
-                [ngClass]="user.status ? 'text-[#628141]' : 'text-gray-400'"
-                class="text-xl"
-              ></ng-icon>
-            </div>
-          </div>
-
-          <h3 class="font-bold text-lg text-[#1B211A] mb-1">{{ user.name }}</h3>
-          <p class="text-xs text-gray-600 mb-3">{{ user.email }}</p>
-          <span
-            class="px-3 py-1 bg-white/60 backdrop-blur rounded-full text-xs font-bold text-[#1B211A] mb-6 shadow-sm"
-            >{{ user.role }}</span
-          >
-
-          <div
-            class="w-full flex items-center justify-between mt-auto pt-4 border-t border-black/10"
-          >
-            <div class="flex items-center gap-2">
-              <label class="relative inline-flex items-center cursor-pointer">
-                <input type="checkbox" [(ngModel)]="user.status" class="sr-only peer" />
-                <div
-                  class="w-8 h-4 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-[#628141]"
-                ></div>
-              </label>
-              <span class="text-[10px] font-bold text-gray-700 uppercase">{{
-                user.status ? 'Active' : 'Inactive'
-              }}</span>
-            </div>
-            <div class="flex gap-2">
-              <button
-                (click)="openEditModal(user)"
-                class="p-1.5 hover:bg-white/50 rounded-lg text-gray-700 transition"
-              >
-                <ng-icon name="heroPencilSquare"></ng-icon>
-              </button>
-            </div>
-          </div>
-        </div>
-      }
+  @if (isLoading) {
+    <div
+      class="flex flex-col justify-center items-center py-24 bg-white rounded-2xl shadow-sm border border-gray-100"
+    >
+      <svg
+        class="animate-spin h-12 w-12 text-[#628141] mb-4"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+      >
+        <circle
+          class="opacity-25"
+          cx="12"
+          cy="12"
+          r="10"
+          stroke="currentColor"
+          stroke-width="4"
+        ></circle>
+        <path
+          class="opacity-75"
+          fill="currentColor"
+          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+        ></path>
+      </svg>
+      <span class="text-sm font-bold text-gray-500 animate-pulse tracking-wide"
+        >Loading users data...</span
+      >
     </div>
   } @else {
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-      <table class="w-full text-left border-collapse">
-        <thead class="bg-gray-50/50">
-          <tr class="border-b border-gray-100">
-            <th class="py-4 px-6 text-[11px] font-bold text-gray-500 uppercase tracking-wider">
-              Name
-            </th>
-            <th class="py-4 px-6 text-[11px] font-bold text-gray-500 uppercase tracking-wider">
-              Role
-            </th>
-            <th
-              class="py-4 px-6 text-center text-[11px] font-bold text-gray-500 uppercase tracking-wider"
-            >
-              Actions
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (user of users; track user.id) {
-            <tr class="border-b border-gray-50 hover:bg-gray-50/80 transition">
-              <td class="py-4 px-6 font-bold text-sm flex items-center gap-3">
-                <img [src]="user.avatar" class="w-8 h-8 rounded-full object-cover shadow-sm" />
-                {{ user.name }}
-              </td>
-              <td class="py-4 px-6 text-sm text-gray-600">{{ user.role }}</td>
-              <td class="py-4 px-6 text-center flex justify-center gap-2">
+    @if (viewMode === 'grid') {
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        @for (user of users; track user.id) {
+          <div
+            [ngClass]="user.status ? 'bg-[#EBD5AB] border-transparent' : 'bg-white border-gray-200'"
+            class="rounded-3xl p-6 flex flex-col items-center relative shadow-sm border transition"
+          >
+            <div class="absolute top-4 right-4 group">
+              <button class="text-gray-500 hover:text-black transition p-2">
+                <ng-icon name="heroEllipsisVertical" class="text-xl"></ng-icon>
+              </button>
+              <div
+                class="absolute right-0 mt-1 w-32 bg-white rounded-xl shadow-xl border border-gray-100 py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10"
+              >
                 <button
                   (click)="openDetailModal(user)"
-                  class="p-2 text-gray-400 hover:text-[#1B211A] hover:bg-gray-100 rounded-lg transition"
-                  title="View Details"
+                  class="w-full text-left px-4 py-2 text-xs font-bold text-gray-700 hover:bg-gray-50 hover:text-[#628141] cursor-pointer"
                 >
-                  <ng-icon name="heroEye"></ng-icon>
+                  View Detail
                 </button>
                 <button
                   (click)="openEditModal(user)"
-                  class="p-2 text-gray-400 hover:text-[#628141] hover:bg-green-50 rounded-lg transition"
-                  title="Edit"
+                  class="w-full text-left px-4 py-2 text-xs font-bold text-gray-700 hover:bg-gray-50 hover:text-[#628141] cursor-pointer"
+                >
+                  Edit
+                </button>
+              </div>
+            </div>
+
+            <div class="relative w-20 h-20 mb-4">
+              <img
+                [src]="user.avatar"
+                class="w-full h-full rounded-full object-cover border-4 border-white shadow-sm"
+              />
+              <div class="absolute bottom-0 right-0 bg-white rounded-full">
+                <ng-icon
+                  name="heroCheckCircle"
+                  [ngClass]="user.status ? 'text-[#628141]' : 'text-gray-400'"
+                  class="text-xl"
+                ></ng-icon>
+              </div>
+            </div>
+
+            <h3 class="font-bold text-lg text-[#1B211A] mb-1">{{ user.name }}</h3>
+            <p class="text-xs text-gray-600 mb-3">{{ user.email }}</p>
+
+            <span
+              [ngClass]="
+                user.role_id === null
+                  ? 'bg-yellow-100 text-yellow-700'
+                  : 'bg-white/60 text-[#1B211A]'
+              "
+              class="px-3 py-1 backdrop-blur rounded-full text-[10px] font-bold uppercase tracking-wider mb-6 shadow-sm"
+            >
+              {{ user.role }}
+            </span>
+
+            <div
+              class="w-full flex items-center justify-between mt-auto pt-4 border-t border-black/10"
+            >
+              <div class="flex items-center gap-2">
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" [(ngModel)]="user.status" class="sr-only peer" disabled />
+                  <div
+                    class="w-8 h-4 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-[#628141]"
+                  ></div>
+                </label>
+                <span class="text-[10px] font-bold text-gray-700 uppercase">{{
+                  user.status ? 'Active' : 'Inactive'
+                }}</span>
+              </div>
+
+              <div class="flex gap-2">
+                @if (user.role_id === null) {
+                  <button
+                    (click)="approveUser(user.id)"
+                    class="p-1.5 bg-[#628141] text-white hover:bg-[#526f35] rounded-lg transition"
+                    title="Approve Kasir"
+                  >
+                    <ng-icon name="heroCheckCircle"></ng-icon>
+                  </button>
+                }
+                <button
+                  (click)="openEditModal(user)"
+                  class="p-1.5 hover:bg-white/50 rounded-lg text-gray-700 transition"
                 >
                   <ng-icon name="heroPencilSquare"></ng-icon>
                 </button>
-              </td>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    } @else {
+      <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        <table class="w-full text-left border-collapse">
+          <thead class="bg-gray-50/50">
+            <tr class="border-b border-gray-100">
+              <th class="py-4 px-6 text-[11px] font-bold text-gray-500 uppercase tracking-wider">
+                Name
+              </th>
+              <th class="py-4 px-6 text-[11px] font-bold text-gray-500 uppercase tracking-wider">
+                Role
+              </th>
+              <th
+                class="py-4 px-6 text-center text-[11px] font-bold text-gray-500 uppercase tracking-wider"
+              >
+                Actions
+              </th>
             </tr>
-          }
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody>
+            @for (user of users; track user.id) {
+              <tr class="border-b border-gray-50 hover:bg-gray-50/80 transition">
+                <td class="py-4 px-6 font-bold text-sm flex items-center gap-3">
+                  <img [src]="user.avatar" class="w-8 h-8 rounded-full object-cover shadow-sm" />
+                  {{ user.name }}
+                </td>
+                <td class="py-4 px-6 text-sm">
+                  @if (user.role_id === null) {
+                    <span
+                      class="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-lg text-[10px] font-bold uppercase tracking-wider"
+                    >
+                      {{ user.role }}
+                    </span>
+                  } @else {
+                    <span class="text-gray-600 font-medium">{{ user.role }}</span>
+                  }
+                </td>
+                <td class="py-4 px-6 text-center flex justify-center gap-2 items-center">
+                  @if (user.role_id === null) {
+                    <button
+                      (click)="approveUser(user.id)"
+                      class="flex items-center gap-1 px-3 py-1.5 bg-[#628141] text-white rounded-lg text-xs font-bold hover:bg-[#526f35] transition shadow-md"
+                      title="Setujui sebagai Kasir"
+                    >
+                      <ng-icon name="heroCheckCircle" class="text-sm"></ng-icon> Approve
+                    </button>
+                  }
+                  <button
+                    (click)="openDetailModal(user)"
+                    class="p-2 text-gray-400 hover:text-[#1B211A] hover:bg-gray-100 rounded-lg transition"
+                    title="View Details"
+                  >
+                    <ng-icon name="heroEye"></ng-icon>
+                  </button>
+                  <button
+                    (click)="openEditModal(user)"
+                    class="p-2 text-gray-400 hover:text-[#628141] hover:bg-green-50 rounded-lg transition"
+                    title="Edit"
+                  >
+                    <ng-icon name="heroPencilSquare"></ng-icon>
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
   }
 
   @if (isModalOpen) {
-    <app-user-form [editData]="selectedUserForEdit" (close)="closeModal()"></app-user-form>
+    <app-user-form [editData]="selectedUserForEdit" (close)="closeModal()" (refresh)="fetchUsers()">
+    </app-user-form>
   }
-
   @if (isDetailModalOpen) {
     <app-user-detail
       [detailData]="selectedUserForDetail"
       (close)="closeDetailModal()"
       (edit)="switchToEditModal($event)"
-    >
-    </app-user-detail>
+    ></app-user-detail>
   }
 </div>

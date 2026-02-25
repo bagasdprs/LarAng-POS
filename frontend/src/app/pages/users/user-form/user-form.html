@@ -51,7 +51,9 @@
       </div>
 
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Temporary Password</label>
+        <label class="block text-sm font-medium text-gray-700 mb-1">
+          {{ isEditMode ? 'New Password (Optional)' : 'Temporary Password' }}
+        </label>
         <div class="relative">
           <input
             [type]="showPassword ? 'text' : 'password'"
@@ -67,7 +69,11 @@
           </button>
         </div>
         <p class="text-[10px] text-gray-400 mt-1.5">
-          User will be prompted to change this on first login.
+          {{
+            isEditMode
+              ? 'Leave blank to keep current password.'
+              : 'User will be prompted to change this on first login.'
+          }}
         </p>
       </div>
     </div>
@@ -93,66 +99,46 @@
           Admin
         </button>
         <button
-          (click)="setRole('Manager')"
+          (click)="setRole('CEO')"
           [ngClass]="
-            user.role === 'Manager'
+            user.role === 'CEO'
               ? 'bg-[#628141] text-white shadow-md'
               : 'text-gray-500 hover:text-[#1B211A]'
           "
           class="flex-1 py-2 rounded-xl text-sm font-bold transition"
         >
-          Manager
+          CEO
         </button>
         <button
-          (click)="setRole('Cashier')"
+          (click)="setRole('Kasir')"
           [ngClass]="
-            user.role === 'Cashier'
+            user.role === 'Kasir'
               ? 'bg-[#628141] text-white shadow-md'
               : 'text-gray-500 hover:text-[#1B211A]'
           "
           class="flex-1 py-2 rounded-xl text-sm font-bold transition"
         >
-          Cashier
+          Kasir
         </button>
       </div>
 
       <div class="bg-gray-50 p-6 rounded-2xl border border-gray-100">
         <h4 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4">
-          {{ user.role }} PERMISSIONS
+          {{ user.role | uppercase }} PERMISSIONS
         </h4>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-6">
+        <div class="flex flex-col gap-4">
           @for (perm of currentPermissions; track perm.name) {
-            <label class="flex items-start gap-3 cursor-pointer group">
+            <div class="flex items-start gap-3">
               <div
-                class="relative flex items-center justify-center w-5 h-5 mt-0.5 rounded border transition"
-                [ngClass]="
-                  perm.checked
-                    ? 'bg-[#628141] border-[#628141]'
-                    : 'border-gray-300 bg-white group-hover:border-[#628141]'
-                "
+                class="relative flex items-center justify-center w-5 h-5 mt-0.5 rounded-full bg-green-100 text-[#628141] shrink-0"
               >
-                @if (perm.checked) {
-                  <svg
-                    class="w-3 h-3 text-white"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="3"
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                }
-                <input type="checkbox" [(ngModel)]="perm.checked" class="sr-only" />
+                <ng-icon name="heroCheckCircle" class="text-sm"></ng-icon>
               </div>
               <div>
                 <p class="text-sm font-bold text-[#1B211A] leading-tight">{{ perm.name }}</p>
-                <p class="text-[10px] text-gray-500">{{ perm.desc }}</p>
+                <p class="text-[10px] text-gray-500 mt-0.5">{{ perm.desc }}</p>
               </div>
-            </label>
+            </div>
           }
         </div>
       </div>
@@ -166,8 +152,8 @@
         Cancel
       </button>
       <button
-        (click)="saveUser()"
-        class="flex items-center gap-2 bg-[#628141] text-white px-6 py-2.5 rounded-xl text-sm font-bold hover:bg-[#526f35] shadow-lg transition"
+        (click)="onSubmitForm()"
+        class="flex items-center gap-2 bg-[#628141] text-white px-6 py-2.5 rounded-xl text-sm font-bold hover:bg-[#526f35] shadow-lg transition cursor-pointer"
       >
         <ng-icon name="heroPaperAirplane" class="text-lg"></ng-icon>
         {{ isEditMode ? 'Save Changes' : 'Invite User' }}
